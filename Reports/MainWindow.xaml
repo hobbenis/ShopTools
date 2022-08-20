@@ -1,0 +1,138 @@
+﻿<Window x:Class="ShopTools.Reports.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:ShopTools.Reports"
+    mc:Ignorable="d"
+    Title="Shop Tool"
+    Height="600" Width="1000"
+    Closing="MainWindow_OnClosing">
+    
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Margin" Value="2"></Setter>
+        </Style>
+    </Window.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        
+        <ToolBar Grid.Row="0" Grid.ColumnSpan="99">
+            <Button Name="btnUnlock" Click="tsbUnlock_Click">Unlock</Button>
+            <Separator></Separator>
+            <Button Name="btnAuth" Click="tsbAuth_Click">Authorization</Button>
+        </ToolBar>
+        
+        <TabControl Grid.Row="1" Grid.ColumnSpan="99">
+            <TabItem Header="Listings">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <ToolBar Grid.Row="0">
+                        <Button Click="RefreshListings">Get</Button>
+                    </ToolBar>
+                    <ListView Name="lvListings" ItemsSource="{Binding ElementName=Listings}" Grid.Row="1">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" MaxHeight="120">
+                                    <StackPanel Orientation="Vertical">
+                                        <Image Source="{Binding Path=first_image_thumb_cache}"></Image>
+                                        <Button Click="btnListingDetail_OnClick" Margin="2">Details</Button>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Vertical">
+                                        <TextBlock Text="{Binding Path=title}"></TextBlock>
+                                        <TextBlock Text="{Binding Path=description}"></TextBlock>
+                                    </StackPanel>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Orders">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <ToolBar Grid.Row="0">
+                        <Label>Cutoff</Label>
+                        <DatePicker Name="dpOrdCutoff"></DatePicker>
+                        <Separator></Separator>
+                        <Button Click="RefreshOrders">Get</Button>
+                    </ToolBar>
+                    <ListView Name="lvOrders" Grid.Row="1" ItemsSource="{Binding ElementName=TransList}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Height="120" Orientation="Horizontal">
+                                    <StackPanel>
+                                        <Image Source="{Binding Path=listing_image_thumb_path}"></Image>
+                                        <Button Click="ButtonBase_OnClick">View</Button>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Vertical">
+                                        <TextBlock Text="{Binding Path=buyer_user_id, StringFormat={}Buyer: {0}}"></TextBlock>
+                                        <TextBlock Text="{Binding Path=p_description, StringFormat={}Description: {0}}"></TextBlock>
+                                        <TextBlock Text="{Binding Path=variation_str, StringFormat={}Variation: {0}}"></TextBlock>
+                                        <TextBlock Text="{Binding Path=buyer_receipt_message, StringFormat={}Buyer Message: {0}}"></TextBlock>
+                                    </StackPanel>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Production">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <ToolBar Grid.Row="0">
+                        <Label>Cutoff</Label>
+                        <DatePicker Name="dpProdCutoff"> </DatePicker>
+                        <Separator></Separator>
+                        <Button Click="RefreshProductionSummary">Get</Button>
+                    </ToolBar>
+                    <ListView Name="lvProduction" ItemsSource="{Binding ElementName=ProdList}" Grid.Row="1">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Height="75" Orientation="Horizontal">
+                                    <Image Source="{Binding listing_image_thumb_path}"></Image>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding description_fl, StringFormat={}Description: {0}}"></TextBlock>
+                                        <TextBlock Text="{Binding sku, StringFormat={}SKU: {0}}"></TextBlock>
+                                        <TextBlock Text="{Binding variation_str, StringFormat={}Variation: {0}}"></TextBlock>
+                                        <TextBlock Text="{Binding qty, StringFormat={}Quantity: {0}}"></TextBlock>
+                                    </StackPanel>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Grid>
+            </TabItem>
+        </TabControl>
+        
+        <StatusBar Grid.Row="2" Grid.ColumnSpan="99">
+            <Label Name="lbStatus"></Label>
+        </StatusBar>
+    </Grid>
+</Window>

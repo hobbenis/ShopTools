@@ -1,0 +1,88 @@
+﻿<Window x:Class="ShopTools.Reports.Auth"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:ShopTools.Reports"
+    mc:Ignorable="d"
+    Name="_auth"
+    Title="Auth" Height="480" Width="640">
+    
+    <Window.Resources>
+        <Style TargetType="TextBox">
+            <Setter Property="Margin" Value="2"></Setter>
+        </Style>
+        <Style TargetType="ListBox">
+            <Setter Property="Margin" Value="2"></Setter>
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="Margin" Value="2"></Setter>
+        </Style>
+    </Window.Resources>
+    
+    <StackPanel>
+        <Grid Margin="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            
+            <Label Grid.Column="0" Grid.Row="0">Code Verifier</Label>
+            <TextBox Grid.Column="1" Grid.Row="0" Name="txtCodeVer"></TextBox>
+            
+            <Label Grid.Row="1" Grid.Column="0">State</Label>
+            <TextBox Grid.Row="1" Grid.Column="1" Name="txtState"></TextBox>   
+            
+            <Label Grid.Row="3" Grid.Column="0">Auth Uri</Label>
+            <TextBox Grid.Row="3" Grid.Column="1" Name="txtAuthUrl"></TextBox>
+            <Button Grid.Row="3" Grid.Column="2" Click="btnCopyAuthReqUrl_Click">Copy</Button>
+            
+            <Label Grid.Row="2" Grid.Column="0">Scopes</Label>
+            <ListView Grid.Row="2" Grid.Column="1" Name="clbScopes" ItemsSource="authScopes">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <CheckBox IsChecked="{Binding Path=Value, Mode=TwoWay}" 
+                                  Content="{Binding Path=Key}"
+                                  Checked="UpdateRequestUrl" Unchecked="UpdateRequestUrl"></CheckBox>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            
+            <Label Grid.Row="4" Grid.Column="0">Redirect Uri</Label>
+            <TextBox Grid.Row="4" Grid.Column="1" Name="txtRedirect" TextChanged="txtRedirect_TextChanged"></TextBox>
+            <Button Grid.Row="4" Grid.Column="2" Click="btnPasteRedirectUri_Click">Paste</Button>
+            
+            <Label Grid.Row="5" Grid.Column="0">Auth Code</Label>
+            <TextBox Grid.Row="5" Grid.Column="1" Name="txtAuthCode"></TextBox>
+            
+            <Label Grid.Row="6" Grid.Column="0">Returned State</Label>
+            <TextBox Grid.Row="6" Grid.Column="1" Name="txtRetState" TextChanged="txtRetState_TextChanged"></TextBox>
+            
+            <Label Grid.Row="7" Grid.Column="0">Access Token</Label>
+            <TextBox Grid.Row="7" Grid.Column="1" Name="txtAccToken"></TextBox>
+            <Button Grid.Row="7" Grid.Column="2" Grid.RowSpan="2" Click="btnReqToken_Click">Request</Button>
+            
+            <Label Grid.Row="8" Grid.Column="0">Refresh Token</Label>
+            <TextBox Grid.Row="8" Grid.Column="1" Name="txtRefToken"></TextBox>
+            
+            <Label Grid.Row="9" Grid.Column="0">Shop Id</Label>
+            <TextBox Name="txtShopId" Grid.Row="9" Grid.Column="1"></TextBox>
+            <Button Grid.Row="9" Grid.Column="2" Click="SetShopId">Set</Button>
+        </Grid>
+        <Button Margin="2" Name="btnSaveTokens" Click="btnSaveTokens_Click">Save Tokens</Button>
+    </StackPanel>
+    
+</Window>
