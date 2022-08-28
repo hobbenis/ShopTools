@@ -3,18 +3,20 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Drawing;
-using ShopTools.Etsy;
+using System.Net.Mime;
+using ShopTools.Data.Etsy;
 
 namespace ShopTools.Reports;
 
 public partial class ListingDetail : System.Windows.Window
 {
-    private Listing myListing;
+    private EtsyListing myListing;
 
-    public ListingDetail(Listing thisListing)
+    public ListingDetail(EtsyListing thisListing)
     {
-        myListing = thisListing;
-
         InitializeComponent();
+        myListing = thisListing;
+        this.Title = myListing.title;
+        this.DataContext = myListing;
     }
 }

@@ -9,7 +9,7 @@ using System.Net;
 using System.Web;
 using System.Windows;
 using System.Windows.Media;
-using ShopTools.Etsy;
+using ShopTools.Data.Etsy;
 
 namespace ShopTools.Reports;
 
@@ -49,7 +49,7 @@ class AuthScope : INotifyPropertyChanged
 
 public partial class Auth : System.Windows.Window
 {
-    private EConnection myConn;
+    private EtsyConnection myConn;
 
     private ObservableCollection<AuthScope> authScopes = new ObservableCollection<AuthScope>()
     {
@@ -58,7 +58,7 @@ public partial class Auth : System.Windows.Window
         new AuthScope() { Key = "transactions_r", Value = false },
     };
 
-    public Auth(EConnection thisConn)
+    public Auth(EtsyConnection thisConn)
     {
         InitializeComponent();
         myConn = thisConn;

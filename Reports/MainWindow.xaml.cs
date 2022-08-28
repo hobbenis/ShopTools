@@ -1,22 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using ShopTools.Etsy;
+using ShopTools.Data.Etsy;
 using Microsoft.VisualBasic;
 using System.IO;
-using ShopTools.Reports;
+using ShopTools.Production;
 
 namespace ShopTools.Reports
 {
@@ -28,12 +18,9 @@ namespace ShopTools.Reports
         private string appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         private string cacheFolder => $@"{appDataFolder}\ShopTools\etsy";
         
-        private EConnection myEtsyConn;
+        private EtsyConnection myEtsyConn;
         
-        private List<Transaction> TransList;
         private ProductionSummary myProductionSummary;
-        private List<ProductionSummaryLine> ProdList;
-        private List<Listing> Listings;
 
         private int daysAhead = 7;
         
@@ -62,7 +49,7 @@ namespace ShopTools.Reports
                 
                 try
                 {
-                    myEtsyConn = new EConnection(cacheFolder, myPass);
+                    myEtsyConn = new EtsyConnection(cacheFolder, myPass);
                     
                     Log("Authorization data unlocked.");
                 }
@@ -81,7 +68,7 @@ namespace ShopTools.Reports
                 string inputPass = Interaction.InputBox("Enter a password to set for the file:");
                 if (inputPass.Length < 1) { return; }
                 
-                myEtsyConn = new EConnection(cacheFolder, inputPass, inputApiKey, inputShopId);
+                myEtsyConn = new EtsyConnection(cacheFolder, inputPass, inputApiKey, inputShopId);
             }
             
             btnAuth.IsEnabled = true;
@@ -89,7 +76,6 @@ namespace ShopTools.Reports
             
             myEtsyConn.LoadCachedListings();
             
-            myProductionSummary = new ProductionSummary(myEtsyConn, DateTime.Today.AddDays(4));
             lvListings.ItemsSource = myEtsyConn.cachedListings.Values;
         }
 
@@ -111,6 +97,8 @@ namespace ShopTools.Reports
 
         private void RefreshListings(object sender, RoutedEventArgs e)
         {
+            if (myEtsyConn is null) { return; }
+            
             MessageBox.Show("Warning! If you have many listings this could take quite some time.");
             
             myEtsyConn.RefreshCachedListings();
@@ -121,31 +109,32 @@ namespace ShopTools.Reports
         
         private void RefreshOrders(object sender, RoutedEventArgs e)
         {
-            TransList = myProductionSummary.OpenTransactions().OrderBy(x => x.expected_ship_date).ToList();
+            myProductionSummary = new ProductionSummary(myEtsyConn.OpenOrders, dpOrdCutoff.SelectedDate.Value);
+
+            lvOrders.ItemsSource = myProductionSummary.OrderLines;
             
-            Log($"{TransList.Count} orders downloaded.");
-            lvOrders.ItemsSource = TransList;
+            Log($"{lvOrders.Items.Count} orders downloaded.");
         }  
         
         private void RefreshProductionSummary(object sender, RoutedEventArgs e)
         {
-            myProductionSummary.cutoff_date = dpProdCutoff.SelectedDate.Value;
-            myProductionSummary.RefreshReceipts();
+            myProductionSummary = new ProductionSummary(myEtsyConn.OpenOrders, dpProdCutoff.SelectedDate.Value);
+
+            lvProduction.ItemsSource = 
+                myProductionSummary.ProductionSummaryLines.OrderBy(x => x.EarliestShipDate).ToList();
             
-            ProdList = myProductionSummary.OpenTransactionSummaryByListing().OrderBy(x => x.earliest_ship_date).ToList();
-            
-            Log($"{ProdList.Count} different items required for orders before the cuttoff date.");
-            lvProduction.ItemsSource = ProdList;
+            Log($"{lvProduction.Items.Count} different items required for orders before the cuttoff date.");
         }
 
         private void btnListingDetail_OnClick(object sender, RoutedEventArgs e)
         {
-            new ListingDetail((sender as Button).DataContext as Listing).Show();
+            new ListingDetail((sender as Button).DataContext as EtsyListing).Show();
         }
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
-            new OrderDetail(myEtsyConn.GetShopReceipt(((sender as Button).DataContext as Transaction).receipt_id)).Show();
+            new OrderDetail(myEtsyConn.GetShopReceipt(((sender as Button).DataContext as EtsyTransaction).receipt_id))
+            .Show();
         }
     }
 }

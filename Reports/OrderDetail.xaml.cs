@@ -1,21 +1,22 @@
 ﻿using System.Diagnostics;
 using System.Windows;
-using ShopTools.Etsy;
+using ShopTools.Data.Etsy;
 
 namespace ShopTools.Reports;
 
 public partial class OrderDetail : System.Windows.Window
 {
-    private Receipt myReceipt;
+    private EtsyReceipt myReceipt;
     
-    public OrderDetail(Receipt thisReceipt)
+    public OrderDetail(EtsyReceipt thisReceipt)
     {
         InitializeComponent();
         myReceipt = thisReceipt;
+        this.DataContext = myReceipt;
     }
     
     private void ButtonBase_OnClick(object thisSender, RoutedEventArgs thisE)
     {
-        Process.Start(myReceipt.web_url);
+        Process.Start(myReceipt.WebUrl);
     }
 }

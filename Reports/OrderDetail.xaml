@@ -5,7 +5,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:ShopTools.Reports"
         mc:Ignorable="d"
-        Title="{Binding ElementName=myReceipt, Path=buyer_email}" Height="480" Width="640">
+        x:Name="OrderDetailView"
+        DataContext="{Binding ElementName=myReceipt}"
+        Title="{Binding buyer_email}" Height="480" Width="640">
     
     <Window.Resources>
         <Style TargetType="TextBox">
@@ -19,7 +21,7 @@
         </Style>
     </Window.Resources>
     
-    <Grid DataContext="myReceipt">
+    <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
@@ -34,18 +36,18 @@
         </Grid.RowDefinitions>
         
         <Label Grid.Row="0" Grid.Column="0">Order Id</Label>
-        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ElementName=myReceipt, Path=receipt_id, Mode=OneTime}"></TextBox>
+        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Path=receipt_id, Mode=OneTime}"></TextBox>
         <Button Grid.Row="0" Grid.Column="2" Click="ButtonBase_OnClick">Open Etsy.com</Button>
         <Label Grid.Row="1" Grid.Column="0">Email</Label>
-        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ElementName=myReceipt, Path=buyer_email, Mode=OneTime}"></TextBox>
+        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=buyer_email, Mode=OneTime}"></TextBox>
         <Label Grid.Row="2" Grid.Column="0">User</Label>
-        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding ElementName=myReceipt, Path=buyer_user_id, Mode=OneTime}"></TextBox>
+        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Path=buyer_user_id, Mode=OneTime}"></TextBox>
         <Label Grid.Row="3" Grid.Column="0">Buyer's Message</Label>
-        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding ElementName=myReceipt, Path=message_from_seller, Mode=OneWay}"></TextBox>
-        <ListView Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="99" ItemsSource="{Binding ElementName=myReceipt, Path=transactions}">
+        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Path=message_from_seller, Mode=OneWay}"></TextBox>
+        <ListView Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="99" ItemsSource="{Binding Path=transactions}">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Image Source="{Binding Path=listing_image_thumb_path}"></Image>
+                    <Image Source="{Binding Path=ImageThumbCachePath}"></Image>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>

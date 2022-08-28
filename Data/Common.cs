@@ -1,13 +1,52 @@
-﻿using System.Net;
+﻿using System.ComponentModel;
+using System.Net;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-using ShopTools.Etsy;
+using ShopTools.Data.Etsy;
 using Newtonsoft.Json;
 using RestSharp;
-using Shared;
 
-namespace ShopTools.Common;
+namespace ShopTools.Data.Common;
+
+public class BoundObject : INotifyPropertyChanged
+{
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    private Dictionary<string, object?> myFields;
+
+    protected void Set(object value, [CallerMemberName] string propName = "")
+    {
+        if (myFields is null)
+        {
+            myFields = new();
+        }
+            
+        if (myFields.ContainsKey(propName) && myFields[propName].Equals(value))
+        {
+            return;
+        }
+
+        myFields[propName] = value;
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
+    }
+
+    protected object? Get([CallerMemberName] string propName = "")
+    {
+        if (myFields is null)
+        {
+            myFields = new();
+        }
+
+        if (!myFields.ContainsKey(propName))
+        {
+            return null;
+        }
+            
+        return myFields[propName];
+    }
+}
 
 public class oAuthToken
 {
@@ -157,7 +196,7 @@ public class OAuth2
     }
 }
 
-class AuthSet
+public class AuthSet
 {
     public LockedString shop_id;
     public LockedString api_key;
@@ -165,7 +204,7 @@ class AuthSet
     public LockedString refresh_token;
 }
 
-class AuthLockBox
+public class AuthLockBox
 {
     public long shop_id
     {

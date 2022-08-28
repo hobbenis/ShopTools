@@ -6,7 +6,7 @@
     xmlns:local="clr-namespace:ShopTools.Reports"
     mc:Ignorable="d"
     Title="Shop Tool"
-    Height="600" Width="1000"
+    Height="600" Width="1200"
     Closing="MainWindow_OnClosing">
     
     <Window.Resources>
@@ -44,17 +44,18 @@
                     <ToolBar Grid.Row="0">
                         <Button Click="RefreshListings">Get</Button>
                     </ToolBar>
-                    <ListView Name="lvListings" ItemsSource="{Binding ElementName=Listings}" Grid.Row="1">
+                    <ListView Name="lvListings" ItemsSource="{Binding ElementName=myEtsyConn, Path=Listings}" Grid.Row="1">
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel Orientation="Horizontal" MaxHeight="120">
+                                <StackPanel Orientation="Horizontal">
                                     <StackPanel Orientation="Vertical">
-                                        <Image Source="{Binding Path=first_image_thumb_cache}"></Image>
-                                        <Button Click="btnListingDetail_OnClick" Margin="2">Details</Button>
+                                        <Button Click="btnListingDetail_OnClick">
+                                            <Image Source="{Binding Path=ImageThumbCachePath}"></Image>
+                                        </Button>
                                     </StackPanel>
-                                    <StackPanel Orientation="Vertical">
-                                        <TextBlock Text="{Binding Path=title}"></TextBlock>
-                                        <TextBlock Text="{Binding Path=description}"></TextBlock>
+                                    <StackPanel Orientation="Vertical" Height="96">
+                                        <TextBlock Text="{Binding Path=Title}"></TextBlock>
+                                        <TextBlock Text="{Binding Path=Description}"></TextBlock>
                                     </StackPanel>
                                 </StackPanel>
                             </DataTemplate>
@@ -77,19 +78,19 @@
                         <Separator></Separator>
                         <Button Click="RefreshOrders">Get</Button>
                     </ToolBar>
-                    <ListView Name="lvOrders" Grid.Row="1" ItemsSource="{Binding ElementName=TransList}">
+                    <ListView Name="lvOrders" Grid.Row="1" ItemsSource="{Binding ElementName=myProductionSummary, Path=OrderLines}">
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel Height="120" Orientation="Horizontal">
+                                <StackPanel Orientation="Horizontal">
                                     <StackPanel>
-                                        <Image Source="{Binding Path=listing_image_thumb_path}"></Image>
-                                        <Button Click="ButtonBase_OnClick">View</Button>
+                                        <Button Click="ButtonBase_OnClick">
+                                            <Image Source="{Binding Path=ImageThumbCachePath}"></Image>    
+                                        </Button>
                                     </StackPanel>
-                                    <StackPanel Orientation="Vertical">
-                                        <TextBlock Text="{Binding Path=buyer_user_id, StringFormat={}Buyer: {0}}"></TextBlock>
-                                        <TextBlock Text="{Binding Path=p_description, StringFormat={}Description: {0}}"></TextBlock>
-                                        <TextBlock Text="{Binding Path=variation_str, StringFormat={}Variation: {0}}"></TextBlock>
-                                        <TextBlock Text="{Binding Path=buyer_receipt_message, StringFormat={}Buyer Message: {0}}"></TextBlock>
+                                    <StackPanel Orientation="Vertical" Height="96">
+                                        <TextBlock Text="{Binding Path=Description, StringFormat={}Description: {0}}"></TextBlock>
+                                        <TextBlock Text="{Binding Path=Variation, StringFormat={}Variation: {0}}"></TextBlock>
+                                        <TextBlock Text="{Binding Path=BuyerMessage, StringFormat={}Buyer Message: {0}}"></TextBlock>
                                     </StackPanel>
                                 </StackPanel>
                             </DataTemplate>
@@ -112,16 +113,20 @@
                         <Separator></Separator>
                         <Button Click="RefreshProductionSummary">Get</Button>
                     </ToolBar>
-                    <ListView Name="lvProduction" ItemsSource="{Binding ElementName=ProdList}" Grid.Row="1">
+                    <ListView Name="lvProduction" ItemsSource="{Binding ElementName=myProductionSummary, Path=ProductionSummaryLines}" Grid.Row="1">
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel Height="75" Orientation="Horizontal">
-                                    <Image Source="{Binding listing_image_thumb_path}"></Image>
+                                <StackPanel Orientation="Horizontal">
                                     <StackPanel>
-                                        <TextBlock Text="{Binding description_fl, StringFormat={}Description: {0}}"></TextBlock>
-                                        <TextBlock Text="{Binding sku, StringFormat={}SKU: {0}}"></TextBlock>
-                                        <TextBlock Text="{Binding variation_str, StringFormat={}Variation: {0}}"></TextBlock>
-                                        <TextBlock Text="{Binding qty, StringFormat={}Quantity: {0}}"></TextBlock>
+                                        <Button>
+                                            <Image Source="{Binding ImageThumbCachePath }"></Image>
+                                        </Button>
+                                    </StackPanel>
+                                    <StackPanel Height="96">
+                                        <TextBlock Text="{Binding DescriptionFirstLine, StringFormat={}Description: {0}}"></TextBlock>
+                                        <TextBlock Text="{Binding Sku, StringFormat={}SKU: {0}}"></TextBlock>
+                                        <TextBlock Text="{Binding Variation, StringFormat={}Variation: {0}}"></TextBlock>
+                                        <TextBlock Text="{Binding Quantity, StringFormat={}Quantity: {0}}"></TextBlock>
                                     </StackPanel>
                                 </StackPanel>
                             </DataTemplate>
