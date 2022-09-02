@@ -5,87 +5,149 @@ using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace ShopTools.Data.Common;
 
 public class LockedString
 {
-    private byte[] b_salt;
-    public string salt
+    public LockedString(string thisPassphrase, string thisPlaintext)
     {
-        get
-        {
-            if (b_salt == null) { b_salt = GetSalt(); }
-            return Convert.ToBase64String(b_salt);
-        }
-        set { b_salt = Convert.FromBase64String(value); }
+        Passphrase = thisPassphrase;
+        Plaintext = thisPlaintext;
     }
     
-    private string myPass;
-    public void SetPass(string thisPass)
+    [JsonConstructor]
+    public LockedString(string cipher_text, string salt_string, string vector_string)
     {
-        myPass = thisPass;
+        Ciphertext = cipher_text;
+        SaltString = salt_string;
+        IntVectorString = vector_string;
     }
-
-    private byte[] stored_key;
-    private byte[] key
+    
+    private string ciphertext;
+    
+    [JsonProperty("cipher_text")]
+    public string Ciphertext
     {
         get
         {
-            if (stored_key == null)
+            if (ciphertext is null)
             {
-                if (b_salt == null)
-                {
-                    b_salt = GetSalt();
-                }
-                
-                using (Rfc2898DeriveBytes myKeyGen = new Rfc2898DeriveBytes(myPass, b_salt))
-                {
-                    stored_key = myKeyGen.GetBytes(16);    
-                }
+                return String.Empty;
             }
-
-            return stored_key;
-        }
-    }
-
-    private string p_plaintext;
-    public string GetPlainText()
-    {
-        if (p_ciphertext == null || p_ciphertext.Length < 1) { return p_plaintext; }
-        
-        p_plaintext = Decrypt(p_ciphertext);
-        return p_plaintext;
-    }
-    public void SetPlainText(string thisText)
-    {
-        p_plaintext = thisText;
-    }
-
-    private string p_ciphertext;
-    public string ciphertext
-    {
-        get
-        {
-            if (p_plaintext == null || p_plaintext.Length < 1) { return p_ciphertext; }
             
-            p_ciphertext = Encrypt(p_plaintext);
-            return p_ciphertext;
+            return ciphertext;
         }
         set
         {
-            p_ciphertext = value;
+            if (ciphertext != null && ciphertext.Length > 0)
+            {
+                throw new Exception("Cannot edit ciphertext after object creation.");
+            }
+            
+            ciphertext = value;
         }
     }
     
-    private string Encrypt(string data)
+    private byte[] _salt;
+    private byte[] Salt
+    {
+        get
+        {
+            if (_salt == null)
+            {
+                _salt = new byte[8];
+
+                using (RNGCryptoServiceProvider myRngCsp = new RNGCryptoServiceProvider())
+                {
+                    myRngCsp.GetBytes(_salt);
+                }
+            }
+
+            return _salt;
+        }
+    }
+    
+    [JsonProperty("salt_string")]
+    public string SaltString
+    {
+        get
+        {
+            return Convert.ToBase64String(Salt);
+        }
+        set
+        {
+            _salt = Convert.FromBase64String(value);
+        }
+    }
+    
+    private byte[] intvector;
+    
+    [JsonProperty("vector_string")]
+    public string IntVectorString
+    {
+        get
+        {
+            if (intvector is null)
+            {
+                return string.Empty;
+            }
+            
+            return Convert.ToBase64String(intvector);
+        }
+        set
+        {
+            intvector = Convert.FromBase64String(value);
+        }
+    }
+    
+    private byte[] key;
+    
+    [JsonIgnore]
+    public string Passphrase
+    {
+        set
+        {
+            using (Rfc2898DeriveBytes myKeyGen = new Rfc2898DeriveBytes(value, Salt))
+            {
+                key = myKeyGen.GetBytes(16);    
+            }
+        }
+    }
+
+    private string plaintext;
+    
+    [JsonIgnore]
+    public string Plaintext
+    {
+        set
+        {
+            plaintext = value;
+
+            ciphertext = Encrypt(plaintext);
+        }
+        get
+        {
+            if (Ciphertext == null || Ciphertext.Length < 1)
+            {
+                return string.Empty;
+            }
+        
+            plaintext = Decrypt(Ciphertext);
+            
+            return plaintext;
+        }
+    }
+
+    private string Encrypt(string thisPlainText)
     {
         if (key == null)
         {
             throw new Exception("No key to encrypt with.");
         }
         
-        if (data == null)
+        if (thisPlainText == null)
         {
             return string.Empty;
         }
@@ -93,11 +155,11 @@ public class LockedString
         Aes myEncoder = Aes.Create();
         myEncoder.Key = key;
         myEncoder.GenerateIV();
-        b_iv = myEncoder.IV;
+        intvector = myEncoder.IV;
         
         MemoryStream myStream = new MemoryStream();
         CryptoStream myCrypto = new CryptoStream(myStream, myEncoder.CreateEncryptor(), CryptoStreamMode.Write);
-        byte[] encodedText = new System.Text.UTF8Encoding(false).GetBytes(data);
+        byte[] encodedText = new System.Text.UTF8Encoding(false).GetBytes(thisPlainText);
         
         myCrypto.Write(encodedText, 0, encodedText.Length);
         myCrypto.FlushFinalBlock();
@@ -106,24 +168,24 @@ public class LockedString
         return Convert.ToBase64String(myStream.ToArray());
     }
     
-    private string Decrypt(string encString)
+    private string Decrypt(string thisCipherText)
     {
         if (key == null)
         {
             throw new Exception("No key to decrypt with.");
         }
 
-        if (encString == null)
+        if (thisCipherText == null)
         {
             return string.Empty;
         }
         
-        byte[] encData = Convert.FromBase64String(encString);
+        byte[] encData = Convert.FromBase64String(thisCipherText);
         
         Aes myDecoder = Aes.Create();
         
         myDecoder.Key = key;
-        myDecoder.IV = b_iv;
+        myDecoder.IV = intvector;
         
         MemoryStream myStream = new MemoryStream();
         CryptoStream myCrypto = new CryptoStream(myStream, myDecoder.CreateDecryptor(), CryptoStreamMode.Write);
@@ -137,28 +199,5 @@ public class LockedString
         myStream.Close();
         
         return plainText;
-    }
-    
-    private byte[] GetSalt()
-    {
-        byte[] thisSalt = new byte[8];
-        
-        using (RNGCryptoServiceProvider rngCsp = new RNGCryptoServiceProvider())
-        {
-            rngCsp.GetBytes(thisSalt);
-        }
-        
-        return thisSalt;
-    }
-
-    private byte[] b_iv;
-    public string iv
-    {
-        get
-        {
-            if (b_iv == null) { return string.Empty; }
-            return Convert.ToBase64String(b_iv);
-        }
-        set{ b_iv = Convert.FromBase64String(value); }
     }
 }

@@ -747,7 +747,7 @@ public class EtsyConnection : IMarketConnection
 
         ContinueInit();
     }
-
+    
     public EtsyConnection(string thisCacheFolder, string passWd, string thisApiKey, string thisShopId)
     {
         myCacheFolder = thisCacheFolder;
@@ -755,7 +755,7 @@ public class EtsyConnection : IMarketConnection
 
         ContinueInit();
     }
-
+    
     private void ContinueInit()
     {
         Directory.CreateDirectory(errorsFolder);
@@ -777,7 +777,7 @@ public class EtsyConnection : IMarketConnection
 
         _etsyShop = GetShop(myAuthBox.shop_id);
     }
-
+    
     public string Oauth2Get(RestRequest myReq, bool saveResponse = false, bool attemptReAuth = true)
     {
         myReq.AddHeader("authorization", $"Bearer {myAuthBox.access_token}");
@@ -806,7 +806,7 @@ public class EtsyConnection : IMarketConnection
 
         return myContents;
     }
-
+    
     public EtsyShop GetShop(long thisShopId)
     {
         RestRequest myReq = new RestRequest("shops/{shop_id}");
@@ -818,7 +818,7 @@ public class EtsyConnection : IMarketConnection
 
         return myRetEtsyShop;
     }
-
+    
     private void SaveError(string errorBlock)
     {
         string errorTime = DateTime.Now.ToString("yyyyMMddHmmss");
@@ -826,7 +826,7 @@ public class EtsyConnection : IMarketConnection
         Directory.CreateDirectory(errorsFolder);
         System.IO.File.WriteAllText($@"{errorsFolder}\{errorTime}.txt", errorBlock);
     }
-
+    
     private void SaveResponse(string responseBlock)
     {
         string responseTime = DateTime.Now.ToString("yyyyMMddHmmss");
@@ -837,7 +837,7 @@ public class EtsyConnection : IMarketConnection
         Directory.CreateDirectory(responsesFolder);
         System.IO.File.WriteAllText($@"{responsesFolder}\{responseTime}.txt", responseFormatted);
     }
-
+    
     public string Ping()
     {
         RestRequest myReq = new RestRequest("openapi-ping", Method.Get);
@@ -846,7 +846,7 @@ public class EtsyConnection : IMarketConnection
 
         return myResponse.Content;
     }
-
+    
     public EtsyListing RefreshListing(int listingId)
     {
         var myReq = new RestRequest("listings/{listing_id}");
@@ -857,7 +857,7 @@ public class EtsyConnection : IMarketConnection
 
         return JsonConvert.DeserializeObject<EtsyListing>(retContents, myJsonSerializerSettings);
     }
-
+    
     public List<EtsyReceipt> GetShopReceipts(bool was_paid = true, bool was_shipped = false, int offset = 0)
     {
         int limit = 25;
@@ -879,10 +879,7 @@ public class EtsyConnection : IMarketConnection
             foreach (EtsyReceipt thisResult in retObj.results)
             {
                 thisResult.SetConnection(this);
-                /*foreach (EtsyTransaction thisTrans in thisResult.transactions)
-                {
-                    thisTrans.SetConnection(this);
-                }*/
+                
                 retRecpts.Add(thisResult);
             }
 
@@ -894,7 +891,7 @@ public class EtsyConnection : IMarketConnection
 
         return retRecpts;
     }
-
+    
     public EtsyReceipt? GetShopReceipt(long receipt_id)
     {
         RestRequest myReq = new RestRequest("shops/{shop_id}/receipts/{receipt_id}");
@@ -912,7 +909,7 @@ public class EtsyConnection : IMarketConnection
 
         return retObj.results.First();
     }
-
+    
     public BindingList<EtsyListingImage> GetListingImages(long listing_id)
     {
         RestRequest myReq = new RestRequest("listings/{listing_id}/images");
@@ -922,7 +919,7 @@ public class EtsyConnection : IMarketConnection
             JsonConvert.DeserializeObject<Results<EtsyListingImage>>(retContents, myJsonSerializerSettings);
         return new BindingList<EtsyListingImage>(retObj.results.ToList());
     }
-
+    
     public EtsyListingImage GetListingImage(long listing_id, long listing_image_id)
     {
         RestRequest myReq = new RestRequest("listings/{listing_id}/images/{listing_image_id}");
@@ -933,7 +930,7 @@ public class EtsyConnection : IMarketConnection
             JsonConvert.DeserializeObject<EtsyListingImage>(retContents, myJsonSerializerSettings);
         return retObj;
     }
-
+    
     public bool RequestRefreshToken()
     {
         AccessToken reqToken = myAuth.RefreshAccessToken(myAuthBox.refresh_token);
@@ -956,7 +953,7 @@ public class EtsyConnection : IMarketConnection
 
         return false;
     }
-
+    
     public string GetListingImageThumbPath(long listing_id, long listing_image_id)
     {
         if (cachedThumbPaths == null)
@@ -982,7 +979,7 @@ public class EtsyConnection : IMarketConnection
 
         return cachedThumbPaths[listing_image_id];
     }
-
+    
     public string GetListingImageFullPath(long listing_id, long listing_image_id)
     {
         string cacheUri = $@"{fullImagesFolder}\{listing_image_id}";
@@ -995,7 +992,7 @@ public class EtsyConnection : IMarketConnection
 
         return cacheUri;
     }
-
+    
     public void LoadCachedListings()
     {
         if (!File.Exists(listingsFile))

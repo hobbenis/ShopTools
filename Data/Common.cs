@@ -198,10 +198,17 @@ public class OAuth2
 
 public class AuthSet
 {
-    public LockedString shop_id;
-    public LockedString api_key;
-    public LockedString access_token;
-    public LockedString refresh_token;
+    [JsonProperty("shop_id")]
+    public LockedString ShopId;
+    
+    [JsonProperty("api_key")]
+    public LockedString ApiKey;
+    
+    [JsonProperty("access_token")]
+    public LockedString AccessToken;
+    
+    [JsonProperty("refresh_token")]
+    public LockedString RefreshToken;
 }
 
 public class AuthLockBox
@@ -210,30 +217,29 @@ public class AuthLockBox
     {
         get
         {
-            return long.Parse(myAuthSet.shop_id.GetPlainText());
+            return long.Parse(myAuthSet.ShopId.Plaintext);
         }
         set
         {
-            myAuthSet.shop_id.SetPlainText(value.ToString());
+            myAuthSet.ShopId.Plaintext = value.ToString();
         }
     }
     
-    public string api_key => myAuthSet.api_key.GetPlainText();
+    public string api_key => myAuthSet.ApiKey.Plaintext;
     
     public string refresh_token
     {
-        get { return myAuthSet.refresh_token.GetPlainText(); }
-        set { myAuthSet.refresh_token.SetPlainText(value); }
+        get { return myAuthSet.RefreshToken.Plaintext; }
+        set { myAuthSet.RefreshToken.Plaintext = value; }
     }
 
     public string access_token
     {
-        get { return myAuthSet.access_token.GetPlainText(); }
-        set { myAuthSet.access_token.SetPlainText(value); }
+        get { return myAuthSet.AccessToken.Plaintext; }
+        set { myAuthSet.AccessToken.Plaintext = value; }
     }
     
     private AuthSet myAuthSet;
-    //private byte[] myKey;
     private string myAuthPath;
     
     public AuthLockBox(string thisAuthPath, string thisPass)
@@ -247,7 +253,10 @@ public class AuthLockBox
         
         myAuthSet = JsonConvert.DeserializeObject<AuthSet>(File.ReadAllText(myAuthPath));
 
-        ContinueInit(thisPass);
+        myAuthSet.AccessToken.Passphrase = thisPass;
+        myAuthSet.ApiKey.Passphrase = thisPass;
+        myAuthSet.RefreshToken.Passphrase = thisPass;
+        myAuthSet.ShopId.Passphrase = thisPass;
     }
     
     public AuthLockBox(string thisAuthPath, string thisPass, string thisApiKey, string thisShopId)
@@ -256,30 +265,21 @@ public class AuthLockBox
         
         myAuthSet = new AuthSet();
         
-        myAuthSet.access_token = new LockedString();
-        myAuthSet.refresh_token = new LockedString();
-        myAuthSet.api_key = new LockedString();
-        myAuthSet.shop_id = new LockedString();
-
-        myAuthSet.api_key.SetPlainText(thisApiKey);
-        myAuthSet.shop_id.SetPlainText(thisShopId);
-        
-        ContinueInit(thisPass);
+        myAuthSet.AccessToken = new LockedString(thisPass, string.Empty);
+        myAuthSet.RefreshToken = new LockedString(thisPass, string.Empty);
+        myAuthSet.ApiKey = new LockedString(thisPass, thisApiKey);
+        myAuthSet.ShopId = new LockedString(thisPass, thisShopId);
         
         Save();
     }
 
-    private void ContinueInit(string thisPass)
-    {
-        myAuthSet.access_token.SetPass(thisPass);
-        myAuthSet.refresh_token.SetPass(thisPass);
-        myAuthSet.api_key.SetPass(thisPass);
-        myAuthSet.shop_id.SetPass(thisPass);
-    }
-    
     public void Save()
     {
-        string saveContents = JsonConvert.SerializeObject(myAuthSet, Formatting.Indented);
+        string saveContents = JsonConvert.SerializeObject(myAuthSet, new JsonSerializerSettings()
+        {
+            Formatting = Formatting.Indented,
+            
+        });
 
         Directory.CreateDirectory(Path.GetDirectoryName(myAuthPath));
         
