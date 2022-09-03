@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         x:Name="OrderDetailView"
         DataContext="{Binding ElementName=myReceipt}"
-        Title="{Binding buyer_email}" Height="480" Width="640">
+        Title="{Binding BuyerEmail}" Height="480" Width="640">
     
     <Window.Resources>
         <Style TargetType="TextBox">
@@ -36,15 +36,15 @@
         </Grid.RowDefinitions>
         
         <Label Grid.Row="0" Grid.Column="0">Order Id</Label>
-        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Path=receipt_id, Mode=OneTime}"></TextBox>
+        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Path=ReceiptId, Mode=OneTime}"></TextBox>
         <Button Grid.Row="0" Grid.Column="2" Click="ButtonBase_OnClick">Open Etsy.com</Button>
         <Label Grid.Row="1" Grid.Column="0">Email</Label>
-        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=buyer_email, Mode=OneTime}"></TextBox>
+        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=BuyerEmail, Mode=OneTime}"></TextBox>
         <Label Grid.Row="2" Grid.Column="0">User</Label>
-        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Path=buyer_user_id, Mode=OneTime}"></TextBox>
+        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Path=BuyerUserId, Mode=OneTime}"></TextBox>
         <Label Grid.Row="3" Grid.Column="0">Buyer's Message</Label>
-        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Path=message_from_seller, Mode=OneWay}"></TextBox>
-        <ListView Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="99" ItemsSource="{Binding Path=transactions}">
+        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Path=MessageFromSeller, Mode=OneWay}"></TextBox>
+        <ListView Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="99" ItemsSource="{Binding Path=Transactions}">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Image Source="{Binding Path=ImageThumbCachePath}"></Image>

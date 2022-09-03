@@ -133,7 +133,7 @@ namespace ShopTools.Reports
         
         private void btnTransactionItem_OnClick(object sender, RoutedEventArgs e)
         {
-            new OrderDetail(myEtsyConn.GetShopReceipt(((sender as Button).DataContext as EtsyTransaction).receipt_id))
+            new OrderDetail(myEtsyConn.GetShopReceipt(((sender as Button).DataContext as EtsyTransaction).ReceiptId))
             .Show();
         }
         

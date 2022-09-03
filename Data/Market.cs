@@ -21,7 +21,7 @@ public interface IMarketOrderLine
     public string Description { get; }
     public string DescriptionFirstLine { get; }
     public string Variation { get; }
-    public DateTime ExpectedShipDate { get; }
+    public DateTime ExpectedShipDateTime { get; }
     public string Platform { get; }
     public string PlatformListingId { get; }
     public string ImageThumbCachePath { get; }

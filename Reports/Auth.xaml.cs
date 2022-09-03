@@ -126,11 +126,11 @@ public partial class Auth : System.Windows.Window
     {
         Debug.Print("Requesting access token...");
         AccessToken myToken = myConn.myAuth.RequestAccessToken(txtAuthCode.Text, txtCodeVer.Text);
-        if (myToken.error != null && myToken.error.Length > 0)
+        if (myToken.Error != null && myToken.Error.Length > 0)
         {
-            MessageBox.Show($"Error: {myToken.error} \n"
-                            + $"Description: {myToken.error_description}\n"
-                            + $"URI: {myToken.error_uri}\n");
+            MessageBox.Show($"Error: {myToken.Error} \n"
+                            + $"Description: {myToken.ErrorDescription}\n"
+                            + $"URI: {myToken.ErrorUri}\n");
         }
         else
         {

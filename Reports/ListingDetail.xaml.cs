@@ -16,7 +16,7 @@ public partial class ListingDetail : System.Windows.Window
     {
         InitializeComponent();
         myListing = thisListing;
-        this.Title = myListing.title;
+        this.Title = myListing.Title;
         this.DataContext = myListing;
     }
 }

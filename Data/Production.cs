@@ -63,7 +63,7 @@ public class ProductionSummary
                 {
                     thisProdLine.Quantity += thisTrans.Quantity;
                     thisProdLine.EarliestShipDate = 
-                        (new DateTime[] { thisProdLine.EarliestShipDate, thisTrans.ExpectedShipDate }).Max();
+                        (new DateTime[] { thisProdLine.EarliestShipDate, thisTrans.ExpectedShipDateTime }).Max();
 
                     goto nextReceipt;
                 }
@@ -74,7 +74,7 @@ public class ProductionSummary
                 PlatformListingId = thisTrans.PlatformListingId,
                 Platform = thisTrans.Platform,
                 Description = thisTrans.Description,
-                EarliestShipDate = thisTrans.ExpectedShipDate,
+                EarliestShipDate = thisTrans.ExpectedShipDateTime,
                 Sku = thisTrans.Sku,
                 Quantity = thisTrans.Quantity,
                 Variation = thisTrans.Variation,

@@ -88,7 +88,7 @@
                                         </Button>
                                     </StackPanel>
                                     <StackPanel Orientation="Vertical" Height="96">
-                                        <TextBlock Text="{Binding Path=ExpectedShipDate, StringFormat={}Ship By: {0}}"></TextBlock>
+                                        <TextBlock Text="{Binding Path=ExpectedShipDateTime, StringFormat={}Ship By: {0}}"></TextBlock>
                                         <TextBlock Text="{Binding Path=Sku, StringFormat={}Sku: {0}}"></TextBlock>
                                         <TextBlock Text="{Binding Quantity, StringFormat={}Quantity: {0}}"></TextBlock>
                                         <TextBlock Text="{Binding Path=DescriptionFirstLine, StringFormat={}Description: {0}}"></TextBlock>
