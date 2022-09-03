@@ -6,7 +6,7 @@
     xmlns:local="clr-namespace:ShopTools.Reports"
     mc:Ignorable="d"
     Title="Shop Tool"
-    Height="600" Width="1200"
+    Height="700" Width="600"
     Closing="MainWindow_OnClosing">
     
     <Window.Resources>
@@ -54,8 +54,8 @@
                                         </Button>
                                     </StackPanel>
                                     <StackPanel Orientation="Vertical" Height="96">
-                                        <TextBlock Text="{Binding Path=Title}"></TextBlock>
-                                        <TextBlock Text="{Binding Path=Description}"></TextBlock>
+                                        <TextBlock Text="{Binding Path=Title, StringFormat={}Title: {0}}"></TextBlock>
+                                        <TextBlock Text="{Binding Path=DescriptionFirstLine, StringFormat={}Description: {0}}"></TextBlock>
                                     </StackPanel>
                                 </StackPanel>
                             </DataTemplate>
@@ -83,12 +83,15 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
                                     <StackPanel>
-                                        <Button Click="ButtonBase_OnClick">
+                                        <Button Click="btnTransactionItem_OnClick">
                                             <Image Source="{Binding Path=ImageThumbCachePath}"></Image>    
                                         </Button>
                                     </StackPanel>
                                     <StackPanel Orientation="Vertical" Height="96">
-                                        <TextBlock Text="{Binding Path=Description, StringFormat={}Description: {0}}"></TextBlock>
+                                        <TextBlock Text="{Binding Path=ExpectedShipDate, StringFormat={}Ship By: {0}}"></TextBlock>
+                                        <TextBlock Text="{Binding Path=Sku, StringFormat={}Sku: {0}}"></TextBlock>
+                                        <TextBlock Text="{Binding Quantity, StringFormat={}Quantity: {0}}"></TextBlock>
+                                        <TextBlock Text="{Binding Path=DescriptionFirstLine, StringFormat={}Description: {0}}"></TextBlock>
                                         <TextBlock Text="{Binding Path=Variation, StringFormat={}Variation: {0}}"></TextBlock>
                                         <TextBlock Text="{Binding Path=BuyerMessage, StringFormat={}Buyer Message: {0}}"></TextBlock>
                                     </StackPanel>
@@ -118,15 +121,16 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
                                     <StackPanel>
-                                        <Button>
-                                            <Image Source="{Binding ImageThumbCachePath }"></Image>
+                                        <Button Click="btnTransactionItem_OnClick">
+                                            <Image Source="{Binding ImageThumbCachePath}"/>
                                         </Button>
                                     </StackPanel>
                                     <StackPanel Height="96">
-                                        <TextBlock Text="{Binding DescriptionFirstLine, StringFormat={}Description: {0}}"></TextBlock>
-                                        <TextBlock Text="{Binding Sku, StringFormat={}SKU: {0}}"></TextBlock>
-                                        <TextBlock Text="{Binding Variation, StringFormat={}Variation: {0}}"></TextBlock>
+                                        <TextBlock Text="{Binding EarliestShipDate, StringFormat={}Due By: {0}}"></TextBlock>
+                                        <TextBlock Text="{Binding Sku, StringFormat={}Sku: {0}}"></TextBlock>
                                         <TextBlock Text="{Binding Quantity, StringFormat={}Quantity: {0}}"></TextBlock>
+                                        <TextBlock Text="{Binding DescriptionFirstLine, StringFormat={}Description: {0}}"></TextBlock>
+                                        <TextBlock Text="{Binding Variation, StringFormat={}Variation: {0}}"></TextBlock>
                                     </StackPanel>
                                 </StackPanel>
                             </DataTemplate>

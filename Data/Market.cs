@@ -19,12 +19,15 @@ public interface IMarketOrderLine
     public string Sku { get; }
     public double Quantity { get; }
     public string Description { get; }
+    public string DescriptionFirstLine { get; }
     public string Variation { get; }
     public DateTime ExpectedShipDate { get; }
     public string Platform { get; }
     public string PlatformListingId { get; }
     public string ImageThumbCachePath { get; }
     public string BuyerMessage { get; }
+    public IMarketListing PlatformListing { get; }
+    public IMarketOrder PlatformOrder { get; }
 }
 
 public interface IMarketOrderShipment
@@ -43,6 +46,7 @@ public interface IMarketListing
 {
     public string Title { get; }
     public string Description { get; }
+    public string DescriptionFirstLine { get; }
     public string ImageThumbCachePath { get; }
     public string WebUrl { get; }
 }

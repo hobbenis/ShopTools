@@ -125,16 +125,21 @@ namespace ShopTools.Reports
             
             Log($"{lvProduction.Items.Count} different items required for orders before the cuttoff date.");
         }
-
+        
         private void btnListingDetail_OnClick(object sender, RoutedEventArgs e)
         {
             new ListingDetail((sender as Button).DataContext as EtsyListing).Show();
         }
-
-        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        
+        private void btnTransactionItem_OnClick(object sender, RoutedEventArgs e)
         {
             new OrderDetail(myEtsyConn.GetShopReceipt(((sender as Button).DataContext as EtsyTransaction).receipt_id))
             .Show();
+        }
+        
+        private void btnProductionItem_OnClick(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Not yet implemented.");
         }
     }
 }

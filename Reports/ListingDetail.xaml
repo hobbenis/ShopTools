@@ -13,7 +13,7 @@
         <Style TargetType="TextBox">
             <Setter Property="Margin" Value="2"></Setter>
         </Style>
-        <Style TargetType="ListBox">
+        <Style TargetType="ListView">
             <Setter Property="Margin" Value="2"></Setter>
         </Style>
         <Style TargetType="Button">
@@ -24,32 +24,44 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"></ColumnDefinition>
-            <ColumnDefinition Width="Auto"></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
         
-        <ListView Grid.Row="0" Grid.Column="0" Grid.RowSpan="99" Width="75"
+        <ListBox Grid.Row="0" Grid.Column="0" Grid.RowSpan="99" Width="96" Margin="2"
                   ItemsSource="{Binding images}">
-            <ListView.ItemTemplate>
+            <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Image Source="{Binding ImageThumbPath}"></Image>
                 </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+            </ListBox.ItemTemplate>
+        </ListBox>
         
-        <Label Grid.Row="0" Grid.Column="1">Title</Label>
-        <TextBox Grid.Row="0" Grid.Column="2" 
-                 Text="{Binding title, Mode=TwoWay}"></TextBox>
-        <Label Grid.Row="1" Grid.Column="1">Status</Label>
-        <TextBox Grid.Row="1" Grid.Column="2" 
-                 Text="{Binding state, Mode=TwoWay}"></TextBox>
-        <Label Grid.Row="2" Grid.Column="1">Description</Label>
-        <TextBox Grid.Row="2" Grid.Column="2" Height="150"
-                 Text="{Binding Path=description, Mode=TwoWay}"></TextBox>
+        <Grid Grid.Row="0" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="99" Orientation="Horizontal">
+                <Label>Title</Label> 
+                <TextBox Text="{Binding title, Mode=TwoWay}"></TextBox>
+            </StackPanel>
+            <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="99">
+                
+            </StackPanel>
+            <Label Grid.Row="1" Grid.Column="0">Status</Label>
+            <TextBox Grid.Row="1" Grid.Column="1" 
+                     Text="{Binding state, Mode=TwoWay}"></TextBox>
+            <Label Grid.Row="2" Grid.Column="0">Description</Label>
+            <TextBox Grid.Row="2" Grid.Column="1" Height="150"
+                     Text="{Binding Path=description, Mode=TwoWay}"></TextBox>
+        </Grid>
     </Grid>
 </Window>
