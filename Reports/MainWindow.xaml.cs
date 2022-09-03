@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using ShopTools.Data.Etsy;
 using Microsoft.VisualBasic;
 using System.IO;
+using ShopTools.Data.Market;
 using ShopTools.Production;
 
 namespace ShopTools.Reports
@@ -18,7 +19,7 @@ namespace ShopTools.Reports
         private string appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         private string cacheFolder => $@"{appDataFolder}\ShopTools\etsy";
         
-        private EtsyConnection myEtsyConn;
+        private IMarketConnection myEtsyConn;
         
         private ProductionSummary myProductionSummary;
 
@@ -74,9 +75,9 @@ namespace ShopTools.Reports
             btnAuth.IsEnabled = true;
             btnUnlock.IsEnabled = false;
             
-            myEtsyConn.LoadCachedListings();
+            myEtsyConn.LoadCachedData();
             
-            lvListings.ItemsSource = myEtsyConn.cachedListings.Values;
+            lvListings.ItemsSource = myEtsyConn.Listings;
         }
 
         private void tsbAuth_Click(object sender, EventArgs e)
@@ -87,7 +88,7 @@ namespace ShopTools.Reports
 
         private void MainWindow_OnClosing(object? thisSender, CancelEventArgs thisE)
         {
-            if (!(myEtsyConn == null)) { myEtsyConn.SaveAuth(); }
+            if (!(myEtsyConn == null)) { myEtsyConn.SaveAuthData(); }
         }
 
         private void Log(string message)
@@ -101,16 +102,17 @@ namespace ShopTools.Reports
             
             MessageBox.Show("Warning! If you have many listings this could take quite some time.");
             
-            myEtsyConn.RefreshCachedListings();
+            myEtsyConn.RefreshListingCache();
             
-            Log($"{myEtsyConn.cachedListings.Count} listings cached.");
-            lvListings.ItemsSource = myEtsyConn.cachedListings.Values;
+            Log($"{myEtsyConn.Listings.Count()} listings cached.");
+            lvListings.ItemsSource = myEtsyConn.Listings;
         }
         
         private void RefreshOrders(object sender, RoutedEventArgs e)
         {
-            myProductionSummary = new ProductionSummary(myEtsyConn.OpenOrders, dpOrdCutoff.SelectedDate.Value);
-
+            myEtsyConn.RefreshOrderCache();
+            myProductionSummary = new ProductionSummary(myEtsyConn.Orders, dpOrdCutoff.SelectedDate.Value);
+            
             lvOrders.ItemsSource = myProductionSummary.OrderLines;
             
             Log($"{lvOrders.Items.Count} orders downloaded.");
@@ -118,28 +120,37 @@ namespace ShopTools.Reports
         
         private void RefreshProductionSummary(object sender, RoutedEventArgs e)
         {
-            myProductionSummary = new ProductionSummary(myEtsyConn.OpenOrders, dpProdCutoff.SelectedDate.Value);
-
+            myEtsyConn.RefreshOrderCache();
+            myProductionSummary = new ProductionSummary(myEtsyConn.Orders, dpProdCutoff.SelectedDate.Value);
+            
             lvProduction.ItemsSource = 
                 myProductionSummary.ProductionSummaryLines.OrderBy(x => x.EarliestShipDate).ToList();
             
-            Log($"{lvProduction.Items.Count} different items required for orders before the cuttoff date.");
+            Log($"{lvProduction.Items.Count} different items required for orders before the cutoff date.");
         }
         
         private void btnListingDetail_OnClick(object sender, RoutedEventArgs e)
         {
-            new ListingDetail((sender as Button).DataContext as EtsyListing).Show();
+            IMarketListing thisListing = (sender as Button).DataContext as IMarketListing;
+            
+            new ListingDetail(thisListing).Show();
         }
         
         private void btnTransactionItem_OnClick(object sender, RoutedEventArgs e)
         {
-            new OrderDetail(myEtsyConn.GetShopReceipt(((sender as Button).DataContext as EtsyTransaction).ReceiptId))
-            .Show();
+            IMarketOrderLine thisTransaction = (sender as Button).DataContext as IMarketOrderLine;
+            
+            new OrderDetail(thisTransaction.PlatformOrder).Show();
         }
         
         private void btnProductionItem_OnClick(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Not yet implemented.");
+            ProductionSummaryLine thisProdLine = (sender as Button).DataContext as ProductionSummaryLine;
+            
+            foreach (IMarketListing thisListing in thisProdLine.RelatedMarketListings)
+            {
+                new ListingDetail(thisListing).Show();
+            }
         }
     }
 }

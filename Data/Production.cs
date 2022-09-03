@@ -10,7 +10,8 @@ public class ProductionSummaryLine
     public string Description { get; set; }
     public string Variation { get; set; }
     public DateTime EarliestShipDate { get; set; }
-
+    public List<IMarketListing> RelatedMarketListings { get; set; }
+    
     public string PlatformListingId { get; set; }
     public string Platform { get; set; }
     
@@ -65,6 +66,11 @@ public class ProductionSummary
                     thisProdLine.EarliestShipDate = 
                         (new DateTime[] { thisProdLine.EarliestShipDate, thisTrans.ExpectedShipDateTime }).Max();
 
+                    if (!thisProdLine.RelatedMarketListings.Contains(thisTrans.PlatformListing))
+                    {
+                        thisProdLine.RelatedMarketListings.Add(thisTrans.PlatformListing);
+                    }
+                    
                     goto nextReceipt;
                 }
             }
@@ -78,7 +84,8 @@ public class ProductionSummary
                 Sku = thisTrans.Sku,
                 Quantity = thisTrans.Quantity,
                 Variation = thisTrans.Variation,
-                ImageThumbCachePath = thisTrans.ImageThumbCachePath
+                ImageThumbCachePath = thisTrans.ImageThumbCachePath,
+                RelatedMarketListings = new List<IMarketListing>() { thisTrans.PlatformListing }
             });
                 
             nextReceipt:

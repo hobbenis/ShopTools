@@ -48,13 +48,13 @@ public class BoundObject : INotifyPropertyChanged
     }
 }
 
-public class oAuthToken
+public class OAuthToken
 {
-    public string code_verifier;
-    public string state;
-    public string auth_code;
-    public string access_token;
-    public string refresh_token;
+    [JsonProperty("code_verifier")] public string CodeVerifier { get; set; }
+    [JsonProperty("state")] public string State { get; set; }
+    [JsonProperty("auth_code")] public string AuthCode { get; set; }
+    [JsonProperty("access_token")] public string AccessToken { get; set; }
+    [JsonProperty("refresh_token")] public string RefreshToken { get; set; }
 }
 
 public class OAuth2
@@ -198,17 +198,10 @@ public class OAuth2
 
 public class AuthSet
 {
-    [JsonProperty("shop_id")]
-    public LockedString ShopId;
-    
-    [JsonProperty("api_key")]
-    public LockedString ApiKey;
-    
-    [JsonProperty("access_token")]
-    public LockedString AccessToken;
-    
-    [JsonProperty("refresh_token")]
-    public LockedString RefreshToken;
+    [JsonProperty("shop_id")] public LockedString ShopId;
+    [JsonProperty("api_key")] public LockedString ApiKey;
+    [JsonProperty("access_token")] public LockedString AccessToken;
+    [JsonProperty("refresh_token")] public LockedString RefreshToken;
 }
 
 public class AuthLockBox

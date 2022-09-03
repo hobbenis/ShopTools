@@ -1,6 +1,7 @@
 //put interfaces and the classes that handle them here
 
 using System.Collections;
+using ShopTools.Data.Common;
 
 namespace ShopTools.Data.Market;
 
@@ -49,10 +50,21 @@ public interface IMarketListing
     public string DescriptionFirstLine { get; }
     public string ImageThumbCachePath { get; }
     public string WebUrl { get; }
+    public IEnumerable<IMarketImage> ListingImages { get; }
 }
 
 public interface IMarketConnection
 {
-    public IEnumerable<IMarketOrder> OpenOrders { get; }
+    public void LoadCachedData();
+    public void SaveCachedData();
+    public void SaveAuthData();
+
+    public void RefreshListingCache();
+    public void RefreshOrderCache();
+
+    public OAuth2 Auth { get; }
+    public AuthLockBox AuthBox { get; }
+    
+    public IEnumerable<IMarketOrder> Orders { get; }
     public IEnumerable<IMarketListing> Listings { get; }
 }

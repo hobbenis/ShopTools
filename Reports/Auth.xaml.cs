@@ -10,6 +10,7 @@ using System.Web;
 using System.Windows;
 using System.Windows.Media;
 using ShopTools.Data.Etsy;
+using ShopTools.Data.Market;
 
 namespace ShopTools.Reports;
 
@@ -49,7 +50,7 @@ class AuthScope : INotifyPropertyChanged
 
 public partial class Auth : System.Windows.Window
 {
-    private EtsyConnection myConn;
+    private IMarketConnection myConn;
 
     private ObservableCollection<AuthScope> authScopes = new ObservableCollection<AuthScope>()
     {
@@ -58,17 +59,14 @@ public partial class Auth : System.Windows.Window
         new AuthScope() { Key = "transactions_r", Value = false },
     };
 
-    public Auth(EtsyConnection thisConn)
+    public Auth(IMarketConnection thisConn)
     {
         InitializeComponent();
         myConn = thisConn;
-        txtCodeVer.Text = myConn.myAuth.GetRandomString(64);
-        txtState.Text = myConn.myAuth.GetRandomString(24);
+        txtCodeVer.Text = myConn.Auth.GetRandomString(64);
+        txtState.Text = myConn.Auth.GetRandomString(24);
         clbScopes.ItemsSource = authScopes;
         authScopes.CollectionChanged += UpdateRequestUrl;
-        txtShopId.Text = myConn.shopId.ToString();
-        
-        HttpListener myListener = new HttpListener();
     }
 
     private void txtRedirect_TextChanged(object sender, EventArgs e)
@@ -78,13 +76,6 @@ public partial class Auth : System.Windows.Window
         txtAuthCode.Text = myParams["code"];
     }
 
-    private void SetShopId(object sender, EventArgs e)
-    {
-        long newShopId;
-        if (!long.TryParse(txtShopId.Text, out newShopId)) { return; };
-        myConn.shopId = newShopId;
-    }
-    
     private void txtRetState_TextChanged(object sender, EventArgs e)
     {
         if (txtRetState.Text.Length > 1)
@@ -118,14 +109,15 @@ public partial class Auth : System.Windows.Window
     
     private void btnSaveTokens_Click(object sender, EventArgs e)
     {
-        myConn.SetTokens(txtAccToken.Text, txtRefToken.Text);
-        myConn.SaveAuth();
+        myConn.AuthBox.access_token = txtAccToken.Text;
+        myConn.AuthBox.refresh_token = txtRefToken.Text;
+        myConn.SaveAuthData();
     }
 
     private void btnReqToken_Click(object sender, EventArgs e)
     {
         Debug.Print("Requesting access token...");
-        AccessToken myToken = myConn.myAuth.RequestAccessToken(txtAuthCode.Text, txtCodeVer.Text);
+        AccessToken myToken = myConn.Auth.RequestAccessToken(txtAuthCode.Text, txtCodeVer.Text);
         if (myToken.Error != null && myToken.Error.Length > 0)
         {
             MessageBox.Show($"Error: {myToken.Error} \n"
@@ -145,7 +137,7 @@ public partial class Auth : System.Windows.Window
                 in authScopes where x.Value
             select x.Key).ToArray();
         
-        txtAuthUrl.Text = myConn.myAuth.GetAuthorizationUrl(txtCodeVer.Text, 
+        txtAuthUrl.Text = myConn.Auth.GetAuthorizationUrl(txtCodeVer.Text, 
             txtState.Text, myScopes);
     }
     

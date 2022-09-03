@@ -121,7 +121,7 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
                                     <StackPanel>
-                                        <Button Click="btnTransactionItem_OnClick">
+                                        <Button Click="btnProductionItem_OnClick">
                                             <Image Source="{Binding ImageThumbCachePath}"/>
                                         </Button>
                                     </StackPanel>

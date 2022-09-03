@@ -48,7 +48,7 @@ public class EtsyError
     [JsonProperty("error_description")] public string ErrorDescription;
     [JsonProperty("error_uri")] public string ErrorUri;
 }
-    
+
 public abstract class EtsyObject : BoundObject
 {  
     [JsonProperty("error")] public string Error;
@@ -64,7 +64,7 @@ public abstract class EtsyObject : BoundObject
         MyConnection = thisConn;
     }
 }
-    
+
 public class EtsyProperty : EtsyObject
 {
     [JsonProperty("property_id")] public long PropertyId { get => (long)Get(); set => Set(value); }
@@ -74,7 +74,7 @@ public class EtsyProperty : EtsyObject
     [JsonProperty("value_ids")] public BindingList<long> ValueIds { get => (BindingList<long>)Get(); set => Set(value); }
     [JsonProperty("values")] public BindingList<string> Values { get => (BindingList<string>)Get(); set => Set(value); }
 }
-    
+
 public class EtsyPrice : EtsyObject
 {
     [JsonProperty("amount")] public int Amount { get => (int)Get(); set => Set(value); }
@@ -131,7 +131,7 @@ public class EtsyListing : EtsyObject, IMarketListing
     [JsonProperty("taxonomy_id")] public long TaxonomyId { get => (long)Get(); set => Set(value); }
     [JsonProperty("shipping_profile")] public EtsyShippingProfile ShippingProfile { get => (EtsyShippingProfile)Get(); set => Set(value); }
     [JsonProperty("user")] public EtsyUser User { get => (EtsyUser)Get(); set => Set(value); }
-    [JsonProperty("images")] public BindingList<EtsyListingImage> Images{ get => (BindingList<EtsyListingImage>)Get(); set => Set(value); }
+    [JsonProperty("images")] public List<EtsyListingImage> Images { get => (List<EtsyListingImage>)Get(); set => Set(value); }
     [JsonProperty("production_partners")] public BindingList<EtsyProductionPartner> ProductionPartners{ get => (BindingList<EtsyProductionPartner>)Get(); set => Set(value); }
     [JsonProperty("skus")] public BindingList<string> Skus{ get => (BindingList<string>)Get(); set => Set(value); }
     [JsonProperty("translations")] public BindingList<EtsyTranslation> Translations{ get => (BindingList<EtsyTranslation>)Get(); set => Set(value); }
@@ -146,7 +146,7 @@ public class EtsyListing : EtsyObject, IMarketListing
         if (ShippingProfile is not null) { ShippingProfile.SetConnection(thisConn); }
         if (User is not null) { User.SetConnection(thisConn); }
 
-        if (Images is not null) { foreach (var thisObj in Images) { thisObj.SetConnection(thisConn); } }
+        if (Images is not null) { foreach (var thisObj in Images) { (thisObj as EtsyListingImage).SetConnection(thisConn); } }
         if (ProductionPartners is not null) {foreach (var thisObj in ProductionPartners) { thisObj.SetConnection(thisConn); }}
         if (Translations is not null) {foreach (var thisObj in Translations) { thisObj.SetConnection(thisConn); }}
     }
@@ -163,9 +163,9 @@ public class EtsyListing : EtsyObject, IMarketListing
     {
         get
         {
-            if (Images != null && Images.Count > 0)
+            if (Images != null && Images.Count() > 0)
             {
-                return MyConnection.GetListingImageThumbPath(ListingId, Images.First().ListingImageId);
+                return Images.First().ThumbCachePath;
             }
             else
             {
@@ -173,7 +173,18 @@ public class EtsyListing : EtsyObject, IMarketListing
             }
         }    
     }
-        
+
+    public IEnumerable<IMarketImage> ListingImages
+    {
+        get
+        {
+            foreach (IMarketImage thisImage in Images)
+            {
+                yield return thisImage;
+            }
+        }
+    }
+
     public string WebUrl => $"https://www.etsy.com/listing/{ListingId}/";
 }
     
@@ -209,7 +220,7 @@ public class EtsyListingProduct : EtsyObject
     }
 }
     
-public class EtsyListingImage : EtsyObject
+public class EtsyListingImage : EtsyObject, IMarketImage
 {
     [JsonProperty("listing_id")] public long ListingId { get; set; }
     [JsonProperty("listing_image_id")] public long ListingImageId { get; set; }
@@ -230,12 +241,21 @@ public class EtsyListingImage : EtsyObject
     [JsonProperty("full_height")] public int FullHeight { get; set; }
     [JsonProperty("full_width")] public int FullWidth { get; set; }
 
-    public string ImageThumbPath
+    public string ThumbCachePath
     {
         get
         {
             if (MyConnection is null) { return null; }
             return MyConnection.GetListingImageThumbPath(ListingId, ListingImageId);
+        }
+    }
+
+    public string CachePath
+    {
+        get
+        {
+            if (MyConnection is null) { return null; }
+            return MyConnection.GetListingImageFullPath(ListingId, ListingImageId);
         }
     }
 }
@@ -733,14 +753,17 @@ public class EtsyConnection : IMarketConnection
     private string redirect_uri = @"http://localhost:3003/oauth/redirect";
 
     private AuthLockBox myAuthBox;
-
+    public AuthLockBox AuthBox => myAuthBox;
+    
     public long shopId
     {
         get { return myAuthBox.shop_id; }
         set { myAuthBox.shop_id = value; }
     }
 
-    public OAuth2 myAuth;
+    private OAuth2 myAuth;
+    public OAuth2 Auth => myAuth;
+    
     private RestClient myRest;
     private JsonSerializerSettings myJsonSerializerSettings;
     private WebClient myWeb;
@@ -907,21 +930,26 @@ public class EtsyConnection : IMarketConnection
         return retObj.results.First();
     }
 
-    public List<EtsyReceipt> GetShopReceipts(bool was_paid = true, bool was_shipped = false, int offset = 0)
+    public List<EtsyReceipt> GetShopReceipts(bool was_paid = true, bool was_shipped = false, int offset = 0, int limit = 10)
     {
-        int limit = 25;
         RestRequest myReq = new RestRequest("shops/{shop_id}/receipts");
         myReq.AddUrlSegment("shop_id", _etsyShop.ShopId);
         myReq.AddQueryParameter("was_paid", was_paid);
         myReq.AddQueryParameter("was_shipped", was_shipped);
-        myReq.AddQueryParameter("limit", 25);
+        myReq.AddQueryParameter("limit", limit);
         myReq.AddQueryParameter("offset", offset);
 
+        if (cachedReceipts.Values.Count > 0)
+        {
+            myReq.AddQueryParameter("min_last_modified", 
+                (from EtsyReceipt x in cachedReceipts.Values select x.UpdateTimestamp).Max());
+        }
+        
         string retContents = OAuth2Get(myReq);
         Results<EtsyReceipt> retObj =
             JsonConvert.DeserializeObject<Results<EtsyReceipt>>(retContents, myJsonSerializerSettings);
         
-        List<EtsyReceipt> retRecpts = new List<EtsyReceipt>();
+        List<EtsyReceipt> retReceipts = new List<EtsyReceipt>();
 
         if (retObj.count > 0)
         {
@@ -929,26 +957,60 @@ public class EtsyConnection : IMarketConnection
             {
                 thisResult.SetConnection(this);
                 
-                retRecpts.Add(thisResult);
+                retReceipts.Add(thisResult);
             }
 
             if (offset + limit < retObj.count)
             {
-                retRecpts.AddRange(GetShopReceipts(was_paid, was_shipped, offset + limit));
+                retReceipts.AddRange(GetShopReceipts(was_paid, was_shipped, offset + limit));
             }
         }
 
-        return retRecpts;
+        return retReceipts;
+    }
+
+    public void RefreshOrderCache()
+    {
+        int offset = 0;
+        int limit = 10;
+
+        while (true)
+        {
+            var theseReceipts = GetShopReceipts(offset: offset, limit: limit);
+                
+            foreach (EtsyReceipt thisOrder in theseReceipts)
+            {
+                if (!cachedReceipts.ContainsKey(thisOrder.ReceiptId) ||
+                    thisOrder.UpdateTimestamp > cachedReceipts[thisOrder.ReceiptId].UpdateTimestamp)
+                {
+                    cachedReceipts[thisOrder.ReceiptId] = thisOrder;
+                    cachedReceipts[thisOrder.ReceiptId].SetConnection(this);
+                }
+                else
+                {
+                    //stop requesting orders when we've stopped getting updates
+                    return;
+                }
+            }
+
+            if (theseReceipts.Count < limit)
+            {
+                //return if the most recent group is short -- indicating this is the final set
+                break;
+            }
+
+            offset += limit;
+        }
     }
     
-    public BindingList<EtsyListingImage> GetListingImages(long listing_id)
+    public List<EtsyListingImage> GetListingImages(long listing_id)
     {
         RestRequest myReq = new RestRequest("listings/{listing_id}/images");
         myReq.AddUrlSegment("listing_id", listing_id);
         string retContents = OAuth2Get(myReq, true);
         Results<EtsyListingImage> retObj =
             JsonConvert.DeserializeObject<Results<EtsyListingImage>>(retContents, myJsonSerializerSettings);
-        return new BindingList<EtsyListingImage>(retObj.results.ToList());
+        return new List<EtsyListingImage>(retObj.results.ToList());
     }
     
     public EtsyListingImage GetListingImage(long listing_id, long listing_image_id, bool useCache = true)
@@ -968,7 +1030,7 @@ public class EtsyConnection : IMarketConnection
     
     public bool RequestRefreshToken()
     {
-        AccessToken reqToken = myAuth.RefreshAccessToken(myAuthBox.refresh_token);
+        AccessToken reqToken = Auth.RefreshAccessToken(myAuthBox.refresh_token);
 
         if (reqToken.Error != null)
         {
@@ -1023,7 +1085,7 @@ public class EtsyConnection : IMarketConnection
         return cacheUri;
     }
     
-    public void LoadCachedListings()
+    public void LoadCachedData()
     {
         if (!File.Exists(listingsFile))
         {
@@ -1043,15 +1105,15 @@ public class EtsyConnection : IMarketConnection
             thisListing.SetConnection(this);
         }
     }
-
-    public void SaveCachedListings()
+    
+    public void SaveCachedData()
     {
         string contentsToWrite = JsonConvert.SerializeObject(cachedListings, Formatting.Indented);
         Directory.CreateDirectory(Path.GetDirectoryName(listingsFile));
         File.WriteAllText(listingsFile, contentsToWrite);
     }
-
-    public Results<EtsyListing> GetShopListings(int offset, int limit)
+    
+    public List<EtsyListing> GetListings(int offset, int limit)
     {
         RestRequest thisReq = new RestRequest(@"shops/{shop_id}/listings", Method.Get);
         thisReq.AddUrlSegment("shop_id", _etsyShop.ShopId);
@@ -1059,77 +1121,70 @@ public class EtsyConnection : IMarketConnection
         thisReq.AddQueryParameter("limit", limit);
         thisReq.AddQueryParameter("offset", offset);
         thisReq.AddQueryParameter("sort_on", "updated");
-
+        thisReq.AddQueryParameter("sort_order", "desc");
+        
         string retContents = OAuth2Get(thisReq, true);
 
-        return JsonConvert.DeserializeObject<Results<EtsyListing>>(retContents, myJsonSerializerSettings);
+        return JsonConvert.DeserializeObject<Results<EtsyListing>>(retContents, myJsonSerializerSettings).results;
     }
-
-    public void RefreshCachedListings()
+    
+    public void RefreshListingCache()
     {
         if (cachedListings == null)
         {
             cachedListings = new Dictionary<long, EtsyListing>();
         }
 
-        int limit = 25;
-        Results<EtsyListing> myResults = GetShopListings(0, limit);
-        int total = myResults.count;
+        int limit = 10;
+        int offset = 0;
 
-        for (int offset = limit; offset <= total; offset = offset + limit)
+        while (true) 
         {
-            foreach (EtsyListing thisListing in myResults.results)
+            List<EtsyListing> myResults = GetListings(offset, limit);
+            
+            foreach (EtsyListing thisListing in myResults)
             {
-                if (cachedListings.ContainsKey(thisListing.ListingId))
-                {
-                    if (thisListing.LastModifiedTimestamp >
-                        cachedListings[thisListing.ListingId].LastModifiedTimestamp)
-                    {
-                        cachedListings[thisListing.ListingId] = thisListing;
-                        cachedListings[thisListing.ListingId].Images = GetListingImages(thisListing.ListingId);
-                    }
-                    else
-                    {
-                        goto finished_updating;
-                    }
-                }
-                else
+                if (!cachedListings.ContainsKey(thisListing.ListingId) ||
+                    thisListing.LastModifiedTimestamp > cachedListings[thisListing.ListingId].LastModifiedTimestamp)
                 {
                     cachedListings[thisListing.ListingId] = thisListing;
                     cachedListings[thisListing.ListingId].Images = GetListingImages(thisListing.ListingId);
                     cachedListings[thisListing.ListingId].SetConnection(this);
                 }
+                else
+                {
+                    goto finished_updating;
+                }
             }
-
-            myResults = GetShopListings(offset, limit);
+            
+            if (myResults.Count < limit)
+            {
+                break;
+            }
+            
+            offset += limit;
         }
 
         finished_updating:
-        SaveCachedListings();
+        SaveCachedData();
     }
     
-    public void SetTokens(string thisAccessToken, string thisRefreshToken)
-    {
-        myAuthBox.access_token = thisAccessToken;
-        myAuthBox.refresh_token = thisRefreshToken;
-    }
-
-    public void SaveAuth()
+    public void SaveAuthData()
     {
         myAuthBox.Save();
     }
     
-    public IEnumerable<IMarketOrder> OpenOrders
+    public IEnumerable<IMarketOrder> Orders
     {
         get
         {
-            foreach (IMarketOrder thisOrder in GetShopReceipts(true, false))
+            foreach (IMarketOrder thisOrder in cachedReceipts.Values)
             {
                 yield return thisOrder;
             }
         }
     }
-
+    
     public IEnumerable<IMarketListing> Listings
     {
         get

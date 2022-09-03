@@ -34,7 +34,7 @@
                   ItemsSource="{Binding Images}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Image Source="{Binding ImageThumbPath}"></Image>
+                    <Image Source="{Binding ThumbCachePath}"></Image>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
