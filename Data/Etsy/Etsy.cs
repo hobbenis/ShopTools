@@ -42,19 +42,19 @@ public enum EtsyScopes
     transactions_w,	//Update a member's sales data.
 }
 
-public class EtsyError
+public abstract class EtsyObject
 {
-    [JsonProperty("error")] public string Error;
-    [JsonProperty("error_description")] public string ErrorDescription;
-    [JsonProperty("error_uri")] public string ErrorUri;
-}
-
-public abstract class EtsyObject : BoundObject
-{  
-    [JsonProperty("error")] public string Error;
-    [JsonProperty("error_description")] public string ErrorDescription;
-    [JsonProperty("error_uri")] public string ErrorUri;
+    [JsonProperty("error")] public string SetError { set { error = value; } }
+    [JsonProperty("error_description")] public string SetErrorDescription { set { error_description = value; } }
+    [JsonProperty("error_uri")] public string SetErrorUri { set { error_uri = value; } }
+    private string error;
+    private string error_description;
+    private string error_uri;
+    [JsonIgnore] public string Error => error;
+    [JsonIgnore] public string ErrorDescription => error_description;
+    [JsonIgnore] public string ErrorUri => error_uri;
     
+    [JsonIgnore]
     public string Platform => "https://www.etsy.com/";
     
     protected EtsyConnection MyConnection;
@@ -67,277 +67,19 @@ public abstract class EtsyObject : BoundObject
 
 public class EtsyProperty : EtsyObject
 {
-    [JsonProperty("property_id")] public long PropertyId { get => (long)Get(); set => Set(value); }
-    [JsonProperty("property_name")] public string PropertyName { get => (string)Get(); set => Set(value); }
-    [JsonProperty("scale_id")] public long ScaleId { get => (long)Get(); set => Set(value); }
-    [JsonProperty("scale_name")] public string ScaleName { get => (string)Get(); set => Set(value); }
-    [JsonProperty("value_ids")] public BindingList<long> ValueIds { get => (BindingList<long>)Get(); set => Set(value); }
-    [JsonProperty("values")] public BindingList<string> Values { get => (BindingList<string>)Get(); set => Set(value); }
+    [JsonProperty("property_id")] public long PropertyId { get; set; }
+    [JsonProperty("property_name")] public string PropertyName { get; set; }
+    [JsonProperty("scale_id")] public long ScaleId { get; set; }
+    [JsonProperty("scale_name")] public string ScaleName { get; set; }
+    [JsonProperty("value_ids")] public BindingList<long> ValueIds { get; set; }
+    [JsonProperty("values")] public BindingList<string> Values { get; set; }
 }
 
 public class EtsyPrice : EtsyObject
 {
-    [JsonProperty("amount")] public int Amount { get => (int)Get(); set => Set(value); }
-    [JsonProperty("divisor")] public int Divisor { get => (int)Get(); set => Set(value); }
-    [JsonProperty("currency_code")] public string CurrencyCode { get => (string)Get(); set => Set(value); }
-}
-    
-public class EtsyListing : EtsyObject, IMarketListing
-{
-    [JsonProperty("listing_id")] public long ListingId { get => (long)Get(); set => Set(value); }
-    [JsonProperty("user_id")] public long UserId { get => (long)Get(); set => Set(value); }
-    [JsonProperty("shop_id")] public long ShopId { get => (long)Get(); set => Set(value); }
-    [JsonProperty("title")] public string Title { get => (string)Get(); set => Set(value); }
-    [JsonProperty("description")] public string Description { get => (string)Get(); set => Set(value); }
-    [JsonProperty("state")] public string State { get => (string)Get(); set => Set(value); }
-    [JsonProperty("creation_timestamp")] public long CreationTimestamp { get => (long)Get(); set => Set(value); }
-    [JsonProperty("ending_timestamp")] public long EndingTimestamp { get => (long)Get(); set => Set(value); }
-    [JsonProperty("original_creation_timestamp")] public long OriginalCreationTimestamp { get => (long)Get(); set => Set(value); }
-    [JsonProperty("last_modified_timestamp")] public long LastModifiedTimestamp { get => (long)Get(); set => Set(value); }
-    [JsonProperty("state_timestamp")] public long StateTimestamp { get => (long)Get(); set => Set(value); }
-    [JsonProperty("quantity")] public int Quantity { get => (int)Get(); set => Set(value); }
-    [JsonProperty("shop_section_id")] public long ShopSectionId { get => (long)Get(); set => Set(value); }
-    [JsonProperty("featured_rank")] public long FeaturedRank { get => (long)Get(); set => Set(value); }
-    [JsonProperty("url")] public string Url { get => (string)Get(); set => Set(value); }
-    [JsonProperty("num_favorers")] public int NumFavorers { get => (int)Get(); set => Set(value); }
-    [JsonProperty("non_taxable")] public bool NonTaxable { get => (bool)Get(); set => Set(value); }
-    [JsonProperty("is_customizable")] public bool IsCustomizable { get => (bool)Get(); set => Set(value); }
-    [JsonProperty("is_personalizable")] public bool IsPersonalizable { get => (bool)Get(); set => Set(value); }
-    [JsonProperty("personalization_is_required")] public bool PersonalizationIsRequired { get => (bool)Get(); set => Set(value); }
-    [JsonProperty("personalization_char_count_max")] public int PersonalizationCharCountMax { get => (int)Get(); set => Set(value); }
-    [JsonProperty("personalization_instructions")] public string PersonalizationInstructions { get => (string)Get(); set => Set(value); }
-    [JsonProperty("listing_type")] public string ListingType { get => (string)Get(); set => Set(value); }
-    [JsonProperty("tags")] public BindingList<string> Tags { get => (BindingList<string>)Get(); set => Set(value); }
-    [JsonProperty("materials")] public BindingList<string> Materials { get => (BindingList<string>)Get(); set => Set(value); }
-    [JsonProperty("shipping_profile_id")] public long ShippingProfileId { get => (long)Get(); set => Set(value); }
-    [JsonProperty("processing_min")] public int ProcessingMin { get => (int)Get(); set => Set(value); }
-    [JsonProperty("processing_max")] public int ProcessingMax { get => (int)Get(); set => Set(value); }
-    [JsonProperty("who_made")] public string WhoMade { get => (string)Get(); set => Set(value); }
-    [JsonProperty("when_made")] public string WhenMade { get => (string)Get(); set => Set(value); }
-    [JsonProperty("is_supply")] public bool IsSupply { get => (bool)Get(); set => Set(value); }
-    [JsonProperty("item_weight")] public double ItemWeight { get => (double)Get(); set => Set(value); }
-    [JsonProperty("item_weight_unit")] public string ItemWeightUnit { get => (string)Get(); set => Set(value); }
-    [JsonProperty("item_length")] public double ItemLength { get => (double)Get(); set => Set(value); }
-    [JsonProperty("item_width")] public double ItemWidth { get => (double)Get(); set => Set(value); }
-    [JsonProperty("item_height")] public double ItemHeight { get => (double)Get(); set => Set(value); }
-    [JsonProperty("item_dimensions_unit")] public string ItemDimensionsUnit { get => (string)Get(); set => Set(value); }
-    [JsonProperty("is_private")] public bool IsPrivate { get => (bool)Get(); set => Set(value); }
-    [JsonProperty("style")] public BindingList<string> Style { get => (BindingList<string>)Get(); set => Set(value); }
-    [JsonProperty("file_data")] public string FileData { get => (string)Get(); set => Set(value); }
-    [JsonProperty("has_variations")] public bool HasVariations { get => (bool)Get(); set => Set(value); }
-    [JsonProperty("should_auto_renew")] public bool ShouldAutoRenew { get => (bool)Get(); set => Set(value); }
-    [JsonProperty("language")] public string Language { get => (string)Get(); set => Set(value); }
-    [JsonProperty("price")] public EtsyPrice Price { get => (EtsyPrice)Get(); set => Set(value); }
-    [JsonProperty("taxonomy_id")] public long TaxonomyId { get => (long)Get(); set => Set(value); }
-    [JsonProperty("shipping_profile")] public EtsyShippingProfile ShippingProfile { get => (EtsyShippingProfile)Get(); set => Set(value); }
-    [JsonProperty("user")] public EtsyUser User { get => (EtsyUser)Get(); set => Set(value); }
-    [JsonProperty("images")] public List<EtsyListingImage> Images { get => (List<EtsyListingImage>)Get(); set => Set(value); }
-    [JsonProperty("production_partners")] public BindingList<EtsyProductionPartner> ProductionPartners{ get => (BindingList<EtsyProductionPartner>)Get(); set => Set(value); }
-    [JsonProperty("skus")] public BindingList<string> Skus{ get => (BindingList<string>)Get(); set => Set(value); }
-    [JsonProperty("translations")] public BindingList<EtsyTranslation> Translations{ get => (BindingList<EtsyTranslation>)Get(); set => Set(value); }
-    
-    public EtsyShop EtsyShop { get => (EtsyShop)Get(); set => Set(value); }
-    
-    public override void SetConnection(EtsyConnection thisConn)
-    {
-        MyConnection = thisConn;
-        
-        if (Price is not null) { Price.SetConnection(thisConn); }
-        if (ShippingProfile is not null) { ShippingProfile.SetConnection(thisConn); }
-        if (User is not null) { User.SetConnection(thisConn); }
-
-        if (Images is not null) { foreach (var thisObj in Images) { (thisObj as EtsyListingImage).SetConnection(thisConn); } }
-        if (ProductionPartners is not null) {foreach (var thisObj in ProductionPartners) { thisObj.SetConnection(thisConn); }}
-        if (Translations is not null) {foreach (var thisObj in Translations) { thisObj.SetConnection(thisConn); }}
-    }
-
-    public string DescriptionFirstLine
-    {
-        get
-        {
-            return Description.Substring(0, Math.Min(Description.Length, Description.IndexOf('\n')));
-        }
-    }
-
-    public string ImageThumbCachePath
-    {
-        get
-        {
-            if (Images != null && Images.Count() > 0)
-            {
-                return Images.First().ThumbCachePath;
-            }
-            else
-            {
-                return string.Empty;
-            }
-        }    
-    }
-
-    public IEnumerable<IMarketImage> ListingImages
-    {
-        get
-        {
-            foreach (IMarketImage thisImage in Images)
-            {
-                yield return thisImage;
-            }
-        }
-    }
-
-    public string WebUrl => $"https://www.etsy.com/listing/{ListingId}/";
-}
-    
-public class EtsyListingOffering : EtsyObject
-{
-    [JsonProperty("offering_id")] public long OfferingId { get => (long)Get(); set => Set(value); }
-    [JsonProperty("quantity")] public double Quantity { get => (double)Get(); set => Set(value); }
-    [JsonProperty("is_enabled")] public bool IsEnabled { get => (bool)Get(); set => Set(value); }
-    [JsonProperty("is_deleted")] public bool IsDeleted { get => (bool)Get(); set => Set(value); }
-    [JsonProperty("price")] public EtsyPrice Price { get => (EtsyPrice)Get(); set => Set(value); }
-    
-    public override void SetConnection(EtsyConnection thisConn)
-    {
-        MyConnection = thisConn;
-        if (Price is not null) { Price.SetConnection(thisConn); }
-    }
-}
-    
-public class EtsyListingProduct : EtsyObject
-{
-    [JsonProperty("product_id")] public long ProductId { get => (long)Get(); set => Set(value); }
-    [JsonProperty("sku")] public string Sku { get => (string)Get(); set => Set(value); }
-    [JsonProperty("is_deleted")] public bool IsDeleted { get => (bool)Get(); set => Set(value); }
-    [JsonProperty("offerings")] public List<EtsyListingOffering> Offerings { get => (List<EtsyListingOffering>)Get(); set => Set(value); }
-    [JsonProperty("property_values")] public List<EtsyProperty> PropertyValues { get => (List<EtsyProperty>)Get(); set => Set(value); }
-    
-    public override void SetConnection(EtsyConnection thisConn)
-    {
-        MyConnection = thisConn;
-
-        if (Offerings is not null) {foreach (var thisObj in Offerings) { thisObj.SetConnection(thisConn); }}
-        if (PropertyValues is not null) {foreach (var thisObj in PropertyValues) { thisObj.SetConnection(thisConn); }}
-    }
-}
-    
-public class EtsyListingImage : EtsyObject, IMarketImage
-{
-    [JsonProperty("listing_id")] public long ListingId { get; set; }
-    [JsonProperty("listing_image_id")] public long ListingImageId { get; set; }
-    [JsonProperty("hex_code")] public string HexCode { get; set; }
-    [JsonProperty("red")] public int Red { get; set; }
-    [JsonProperty("green")] public int Green { get; set; }
-    [JsonProperty("blue")] public int Blue { get; set; }
-    [JsonProperty("hue")] public int Hue { get; set; }
-    [JsonProperty("saturation")] public int Saturation { get; set; }
-    [JsonProperty("brightness")] public int Brightness { get; set; }
-    [JsonProperty("is_black_and_white")] public bool IsBlackAndWhite { get; set; }
-    [JsonProperty("creation_tsz")] public int CreationTsz { get; set; }
-    [JsonProperty("rank")] public int Rank { get; set; }
-    [JsonProperty("url_75x75")] public string Url75X75 { get; set; }
-    [JsonProperty("url_170x135")] public string Url170X135 { get; set; }
-    [JsonProperty("url_570xN")] public string Url570XN { get; set; }
-    [JsonProperty("url_fullxfull")] public string UrlFullxfull { get; set; }
-    [JsonProperty("full_height")] public int FullHeight { get; set; }
-    [JsonProperty("full_width")] public int FullWidth { get; set; }
-
-    public string ThumbCachePath
-    {
-        get
-        {
-            if (MyConnection is null) { return null; }
-            return MyConnection.GetListingImageThumbPath(ListingId, ListingImageId);
-        }
-    }
-
-    public string CachePath
-    {
-        get
-        {
-            if (MyConnection is null) { return null; }
-            return MyConnection.GetListingImageFullPath(ListingId, ListingImageId);
-        }
-    }
-}
-    
-public class EtsyShippingProfile : EtsyObject
-{
-    [JsonProperty("shipping_profile_id")] public long ShippingProfileId { get; set; }
-    [JsonProperty("title")] public string Title { get; set; }
-    [JsonProperty("user_id")] public long UserId { get; set; }
-    [JsonProperty("min_processing_days")] public int MinProcessingDays { get; set; }
-    [JsonProperty("max_processing_days")] public int MaxProcessingDays { get; set; }
-    [JsonProperty("processing_days_display_label")] public string ProcessingDaysDisplayLabel { get; set; }
-    [JsonProperty("origin_country_iso")] public string OriginCountryIso { get; set; }
-    [JsonProperty("is_deleted")] public bool IsDeleted { get; set; }
-    [JsonProperty("shipping_profile_destinations")] public List<EtsyShippingProfileDestination> ShippingProfileDestinations { get; set; }
-    [JsonProperty("shipping_profile_upgrades")] public List<EtsyShippingProfileUpgrade> ShippingProfileUpgrades { get; set; }
-    [JsonProperty("origin_postal_code")] public string OriginPostalCode { get; set; }
-    [JsonProperty("profile_type")] public string ProfileType { get; set; }
-    [JsonProperty("domestic_handling_fee")] public double DomesticHandlingFee { get; set; }
-    [JsonProperty("international_handling_fee")] public double InternationalHandlingFee { get; set; }
-
-    public override void SetConnection(EtsyConnection thisConn)
-    {
-        MyConnection = thisConn;
-
-        if (ShippingProfileDestinations is not null)
-        {
-            foreach (var thisObj in ShippingProfileDestinations) { thisObj.SetConnection(thisConn); }
-        }
-
-        if (ShippingProfileUpgrades is not null)
-        {
-            foreach (var thisObj in ShippingProfileUpgrades) { thisObj.SetConnection(thisConn); }    
-        }
-    }
-}
-
-public class EtsyShippingProfileDestination : EtsyObject
-{
-    [JsonProperty("shipping_profile_destination_id")] public long ShippingProfileDestinationId { get; set; }
-    [JsonProperty("shipping_profile_id")] public long ShippingProfileId { get; set; }
-    [JsonProperty("origin_country_iso")] public string OriginCountryIso { get; set; }
-    [JsonProperty("destination_country_iso")] public string DestinationCountryIso { get; set; }
-    [JsonProperty("destination_region")] public string DestinationRegion { get; set; }
-    [JsonProperty("primary_cost")] public EtsyPrice PrimaryCost { get; set; }
-    [JsonProperty("secondary_cost")] public EtsyPrice SecondaryCost { get; set; }
-    [JsonProperty("shipping_carrier_id")] public long ShippingCarrierId { get; set; }
-    [JsonProperty("mail_class")] public string MailClass { get; set; }
-    [JsonProperty("min_delivery_days")] public int MinDeliveryDays { get; set; }
-    [JsonProperty("max_delivery_days")] public int MaxDeliveryDays { get; set; }
-    
-    public override void SetConnection(EtsyConnection thisConn)
-    {
-        MyConnection = thisConn;
-
-        if (PrimaryCost is not null) { PrimaryCost.SetConnection(thisConn); }
-        if (SecondaryCost is not null) { SecondaryCost.SetConnection(thisConn); }
-    }
-}
-
-public class EtsyShippingProfileUpgrade : EtsyObject
-{
-    [JsonProperty("shipping_profile_id")] public long ShippingProfileId { get; set; }
-    [JsonProperty("upgrade_id")] public long UpgradeId { get; set; }
-    [JsonProperty("upgrade_name")] public string UpgradeName { get; set; }
-    [JsonProperty("type")] public string Type { get; set; }
-    [JsonProperty("rank")] public int Rank { get; set; }
-    [JsonProperty("language")] public string Language { get; set; }
-    [JsonProperty("price")] public EtsyPrice Price { get; set; }
-    [JsonProperty("secondary_price")] public EtsyPrice SecondaryPrice { get; set; }
-    [JsonProperty("shipping_carrier_id")] public long ShippingCarrierId { get; set; }
-    [JsonProperty("mail_class")] public string MailClass { get; set; }
-    [JsonProperty("min_delivery_days")] public int MinDeliveryDays { get; set; }
-    [JsonProperty("max_delivery_days")] public int MaxDeliveryDays { get; set; }
-    
-    public override void SetConnection(EtsyConnection thisConn)
-    {
-        MyConnection = thisConn;
-
-        if (Price is not null) { Price.SetConnection(thisConn); }
-        if (SecondaryPrice is not null) {SecondaryPrice.SetConnection(thisConn);}
-    }
+    [JsonProperty("amount")] public int Amount { get; set; }
+    [JsonProperty("divisor")] public int Divisor { get; set; }
+    [JsonProperty("currency_code")] public string CurrencyCode { get; set; }
 }
 
 public class EtsyTranslation : EtsyObject
@@ -540,176 +282,6 @@ public class EtsyPaymentAdjustment : EtsyObject
     [JsonProperty("create_timestamp")] public int CreateTimestamp { get; set; }
     [JsonProperty("update_timestamp")] public int UpdateTimestamp { get; set; }
 }
-    
-public class EtsyReceipt : EtsyObject, IMarketOrder
-{
-    [JsonProperty("receipt_id")] public long ReceiptId { get; set; }
-    [JsonProperty("receipt_type")] public int ReceiptType { get; set; }
-    [JsonProperty("seller_user_id")] public long SellerUserId { get; set; }
-    [JsonProperty("seller_email")] public string SellerEmail { get; set; }
-    [JsonProperty("buyer_user_id")] public long BuyerUserId { get; set; }
-    [JsonProperty("buyer_email")] public string BuyerEmail { get; set; }
-    [JsonProperty("name")] public string Name { get; set; }
-    [JsonProperty("first_line")] public string FirstLine { get; set; }
-    [JsonProperty("second_line")] public string SecondLine { get; set; }
-    [JsonProperty("city")] public string City { get; set; }
-    [JsonProperty("state")] public string State { get; set; }
-    [JsonProperty("zip")] public string Zip { get; set; }
-    [JsonProperty("status")] public string Status { get; set; }
-    [JsonProperty("formatted_address")] public string FormattedAddress { get; set; }
-    [JsonProperty("country_iso")] public string CountryIso { get; set; }
-    [JsonProperty("payment_method")] public string PaymentMethod { get; set; }
-    [JsonProperty("payment_email")] public string PaymentEmail { get; set; }
-    [JsonProperty("message_from_seller")] public string MessageFromSeller { get; set; }
-    [JsonProperty("message_from_buyer")] public string MessageFromBuyer { get; set; }
-    [JsonProperty("message_from_payment")] public string MessageFromPayment { get; set; }
-    [JsonProperty("is_paid")] public bool IsPaid { get; set; }
-    [JsonProperty("is_shipped")] public bool IsShipped { get; set; }
-    [JsonProperty("create_timestamp")] public int CreateTimestamp { get; set; }
-    [JsonProperty("update_timestamp")] public int UpdateTimestamp { get; set; }
-    [JsonProperty("is_gift")] public bool IsGift { get; set; }
-    [JsonProperty("gift_message")] public string GiftMessage { get; set; }
-    [JsonProperty("grandtotal")] public EtsyPrice Grandtotal { get; set; }
-    [JsonProperty("subtotal")] public EtsyPrice Subtotal { get; set; }
-    [JsonProperty("total_price")] public EtsyPrice TotalPrice { get; set; }
-    [JsonProperty("total_shipping_cost")] public EtsyPrice TotalShippingCost { get; set; }
-    [JsonProperty("total_tax_cost")] public EtsyPrice TotalTaxCost { get; set; }
-    [JsonProperty("total_vat_cost")] public EtsyPrice TotalVatCost { get; set; }
-    [JsonProperty("discount_amt")] public EtsyPrice DiscountAmt { get; set; }
-    [JsonProperty("gift_wrap_price")] public EtsyPrice GiftWrapPrice { get; set; }
-    [JsonProperty("shipments")] public List<EtsyShipment> Shipments { get; set; }
-    [JsonProperty("transactions")] public List<EtsyTransaction> Transactions { get; set; }
-    
-    public override void SetConnection(EtsyConnection thisConn)
-    {
-        MyConnection = thisConn;
-
-        if (Grandtotal is not null) {Grandtotal.SetConnection(thisConn);}
-        if (Subtotal is not null) {Subtotal.SetConnection(thisConn);}
-        if (TotalPrice is not null) {TotalPrice.SetConnection(thisConn);}
-        if (TotalShippingCost is not null) {TotalShippingCost.SetConnection(thisConn);}
-        if (TotalTaxCost is not null) {TotalTaxCost.SetConnection(thisConn);}
-        if (TotalVatCost is not null) {TotalVatCost.SetConnection(thisConn);}
-        if (DiscountAmt is not null) {DiscountAmt.SetConnection(thisConn);}
-        if (GiftWrapPrice is not null) {GiftWrapPrice.SetConnection(thisConn);}
-
-        if (Shipments is not null)
-        {
-            foreach (var thisObj in Shipments) { thisObj.SetConnection(thisConn); }    
-        }
-
-        if (Transactions is not null)
-        {
-            foreach (var thisObj in Transactions) { thisObj.SetConnection(thisConn); }
-        }
-    }
-    
-    public IEnumerable<IMarketOrderLine> OrderLines => new List<IMarketOrderLine>(Transactions);
-    public IEnumerable<IMarketOrderShipment> OrderShipments => new List<IMarketOrderShipment>(Shipments);
-    public string WebUrl => $"https://www.etsy.com/your/orders/?order_id={ReceiptId}";
-    
-    public DateTime EarliestExpectedShipDate
-    {
-        get
-        {
-            return DateTimeOffset.FromUnixTimeSeconds(
-                (from x in Transactions select x.ExpectedShipDate).Max()).ToLocalTime().DateTime;
-        }
-    }
-}
-
-public class EtsyShipment : EtsyObject, IMarketOrderShipment
-{
-    [JsonProperty("receipt_shipping_id")] public long ReceiptShippingId { get; set; }
-    [JsonProperty("shipment_notification_timestamp")] public int ShipmentNotificationTimestamp { get; set; }
-    [JsonProperty("carrier_name")] public string Carrier { get; set; }
-    [JsonProperty("tracking_code")] public string TrackingId { get; set; }
-}
-
-public class EtsyTransaction : EtsyObject, IMarketOrderLine
-{
-    [JsonProperty("transaction_id")] public long TransactionId { get; set; }
-    [JsonProperty("title")] public string Title { get; set; }
-    [JsonProperty("description")] public string Description { get; set; }
-    [JsonProperty("seller_user_id")] public long SellerUserId { get; set; }
-    [JsonProperty("buyer_user_id")] public long BuyerUserId { get; set; }
-    [JsonProperty("create_timestamp")] public int CreateTimestamp { get; set; }
-    [JsonProperty("paid_timestamp")] public int PaidTimestamp { get; set; }
-    [JsonProperty("shipped_timestamp")] public int ShippedTimestamp { get; set; }
-    [JsonProperty("quantity")] public double Quantity { get; set; }
-    [JsonProperty("listing_image_id")] public long ListingImageId { get; set; }
-    [JsonProperty("receipt_id")] public long ReceiptId { get; set; }
-    [JsonProperty("is_digital")] public bool IsDigital { get; set; }
-    [JsonProperty("file_data")] public string FileData { get; set; }
-    [JsonProperty("listing_id")] public long ListingId { get; set; }
-    [JsonProperty("transaction_type")] public string TransactionType { get; set; }
-    [JsonProperty("product_id")] public long ProductId { get; set; }
-    [JsonProperty("sku")] public string Sku { get; set; }
-    [JsonProperty("price")] public EtsyPrice Price { get; set; }
-    [JsonProperty("shipping_cost")] public EtsyPrice ShippingCost { get; set; }
-    [JsonProperty("variations")] public List<EtsyVariation> Variations { get; set; }
-    [JsonProperty("shipping_profile_id")] public long ShippingProfileId { get; set; }
-    [JsonProperty("min_processing_days")] public int MinProcessingDays { get; set; }
-    [JsonProperty("max_processing_days")] public int MaxProcessingDays { get; set; }
-    [JsonProperty("shipping_method")] public string ShippingMethod { get; set; }
-    [JsonProperty("shipping_upgrade")] public string ShippingUpgrade { get; set; }
-    [JsonProperty("expected_ship_date")] public int ExpectedShipDate { get; set; }
-    [JsonProperty("buyer_receipt_message")] public string BuyerReceiptMessage { get; set; }
-    
-    public override void SetConnection(EtsyConnection thisConn)
-    {
-        MyConnection = thisConn;
-        
-        if (Price is not null) {Price.SetConnection(thisConn);}
-        if (Price is not null) {ShippingCost.SetConnection(thisConn);}
-
-        if (Variations is not null)
-        {
-            foreach (var thisObj in Variations) { thisObj.SetConnection(thisConn); }    
-        }
-    }
-    
-    public DateTime CreatedDate =>
-        DateTimeOffset.FromUnixTimeSeconds(CreateTimestamp).ToLocalTime().DateTime;
-
-    public string DescriptionFirstLine
-    {
-        get { return Description.Substring(0, Math.Min(Description.Length, Description.IndexOf('\n'))); }
-    }
-    
-    public string Variation => string.Join(", ", from v in Variations select v.FormattedValue);
-    public DateTime ExpectedShipDateTime => DateTimeOffset.FromUnixTimeSeconds(ExpectedShipDate).ToLocalTime().DateTime;
-    public string PlatformListingId => ListingId.ToString();
-    public string BuyerMessage => BuyerReceiptMessage;
-
-    public IMarketOrder PlatformOrder
-    {
-        get
-        {
-            if (MyConnection is null)
-            {
-                return null;
-            }
-
-            return MyConnection.GetShopReceipt(ReceiptId) as IMarketOrder;
-        }
-    }
-
-    public IMarketListing PlatformListing
-    {
-        get
-        {
-            if (MyConnection is null)
-            {
-                return null;
-            }
-
-            return MyConnection.GetListing(ListingId) as IMarketListing;
-        }
-    }
-
-    public string ImageThumbCachePath => MyConnection.GetListingImageThumbPath(ListingId, ListingImageId); 
-}
 
 public class EtsyVariation : EtsyObject
 {
@@ -814,6 +386,10 @@ public class EtsyConnection : IMarketConnection
         };
 
         _etsyShop = GetShop(myAuthBox.shop_id);
+        if (_etsyShop == null)
+        {
+            throw new Exception("Unable to retrieve shop information.");
+        }
     }
     
     public string OAuth2Get(RestRequest myReq, bool saveResponse = false, bool attemptReAuth = true)
@@ -821,7 +397,12 @@ public class EtsyConnection : IMarketConnection
         myReq.AddHeader("authorization", $"Bearer {myAuthBox.access_token}");
 
         var myResult = myRest.ExecuteAsync(myReq).GetAwaiter().GetResult();
-
+        
+        /*if (!myResult.IsSuccessful)
+        {
+            return string.Empty;
+        }*/
+        
         string myContents = myResult.Content;
 
         EtsyObject myResponse = JsonConvert.DeserializeObject<EtsyShop>(myContents, myJsonSerializerSettings);
@@ -1057,9 +638,9 @@ public class EtsyConnection : IMarketConnection
         {
             return cachedThumbPaths[listing_image_id];
         }
-
-        Directory.CreateDirectory(thumbsFolder);
+        
         string cacheUri = $@"{thumbsFolder}\{listing_image_id}";
+        System.IO.Directory.CreateDirectory(Path.GetDirectoryName(cacheUri));
 
         if (!File.Exists(cacheUri))
         {
@@ -1076,13 +657,21 @@ public class EtsyConnection : IMarketConnection
     {
         string cacheUri = $@"{fullImagesFolder}\{listing_image_id}";
 
+        return cacheUri;
+    }
+
+    public bool DownloadImageToCache(long listing_id, long listing_image_id)
+    {
+        string cacheUri = GetListingImageFullPath(listing_id, listing_image_id);
+        System.IO.Directory.CreateDirectory(Path.GetDirectoryName(cacheUri));
+
         if (!System.IO.File.Exists(cacheUri))
         {
             EtsyListingImage myImage = GetListingImage(listing_id, listing_image_id);
             myWeb.DownloadFile(myImage.UrlFullxfull, cacheUri);
         }
 
-        return cacheUri;
+        return System.IO.File.Exists(cacheUri) == true;
     }
     
     public void LoadCachedData()
@@ -1122,6 +711,7 @@ public class EtsyConnection : IMarketConnection
         thisReq.AddQueryParameter("offset", offset);
         thisReq.AddQueryParameter("sort_on", "updated");
         thisReq.AddQueryParameter("sort_order", "desc");
+        thisReq.AddQueryParameter("includes", "Images");
         
         string retContents = OAuth2Get(thisReq, true);
 
@@ -1141,6 +731,11 @@ public class EtsyConnection : IMarketConnection
         while (true) 
         {
             List<EtsyListing> myResults = GetListings(offset, limit);
+
+            if (myResults is null || myResults.Count < 1)
+            {
+                break;
+            }
             
             foreach (EtsyListing thisListing in myResults)
             {
@@ -1148,7 +743,10 @@ public class EtsyConnection : IMarketConnection
                     thisListing.LastModifiedTimestamp > cachedListings[thisListing.ListingId].LastModifiedTimestamp)
                 {
                     cachedListings[thisListing.ListingId] = thisListing;
-                    cachedListings[thisListing.ListingId].Images = GetListingImages(thisListing.ListingId);
+                    if (thisListing.Images is null || thisListing.Images.Count < 1)
+                    {
+                        cachedListings[thisListing.ListingId].Images = GetListingImages(thisListing.ListingId);
+                    }
                     cachedListings[thisListing.ListingId].SetConnection(this);
                 }
                 else

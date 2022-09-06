@@ -52,12 +52,20 @@ namespace ShopTools.Reports
                 {
                     myEtsyConn = new EtsyConnection(cacheFolder, myPass);
                     
+                    
                     Log("Authorization data unlocked.");
                 }
                 catch (Exception myError)
                 {
-                    Log($"Incorrect password. Error: {myError.Message}");
-                    return;
+                    if (myError.Message.Equals("Padding is invalid and cannot be removed."))
+                    {
+                        Log($"Incorrect password. Error: {myError.Message}");
+                        return;
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
             }
             else
@@ -111,9 +119,9 @@ namespace ShopTools.Reports
         private void RefreshOrders(object sender, RoutedEventArgs e)
         {
             myEtsyConn.RefreshOrderCache();
-            myProductionSummary = new ProductionSummary(myEtsyConn.Orders, dpOrdCutoff.SelectedDate.Value);
-            
-            lvOrders.ItemsSource = myProductionSummary.OrderLines;
+            //myProductionSummary = new ProductionSummary(myEtsyConn.Orders, dpOrdCutoff.SelectedDate.Value);
+
+            lvOrders.ItemsSource = myEtsyConn.Orders;
             
             Log($"{lvOrders.Items.Count} orders downloaded.");
         }  

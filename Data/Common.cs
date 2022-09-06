@@ -10,44 +10,6 @@ using RestSharp;
 
 namespace ShopTools.Data.Common;
 
-public class BoundObject : INotifyPropertyChanged
-{
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    private Dictionary<string, object?> myFields;
-
-    protected void Set(object value, [CallerMemberName] string propName = "")
-    {
-        if (myFields is null)
-        {
-            myFields = new();
-        }
-            
-        if (myFields.ContainsKey(propName) && myFields[propName].Equals(value))
-        {
-            return;
-        }
-
-        myFields[propName] = value;
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
-    }
-
-    protected object? Get([CallerMemberName] string propName = "")
-    {
-        if (myFields is null)
-        {
-            myFields = new();
-        }
-
-        if (!myFields.ContainsKey(propName))
-        {
-            return null;
-        }
-            
-        return myFields[propName];
-    }
-}
-
 public class OAuthToken
 {
     [JsonProperty("code_verifier")] public string CodeVerifier { get; set; }

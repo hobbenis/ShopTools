@@ -8,7 +8,7 @@ public class ProductionSummaryLine
     public string Sku { get; set; }
     public double Quantity { get; set; }
     public string Description { get; set; }
-    public string Variation { get; set; }
+    public Dictionary<string, double> Variations { get; set; }
     public DateTime EarliestShipDate { get; set; }
     public List<IMarketListing> RelatedMarketListings { get; set; }
     
@@ -58,14 +58,22 @@ public class ProductionSummary
         {
             foreach (ProductionSummaryLine thisProdLine in mySummaryLines)
             {
-                if ((thisProdLine.PlatformListingId.Equals(thisTrans.PlatformListingId)
-                     && thisProdLine.Platform.Equals(thisTrans.Platform)) &&
-                    thisProdLine.Variation.Equals(thisTrans.Variation))
+                if (thisProdLine.PlatformListingId.Equals(thisTrans.PlatformListingId)
+                     && thisProdLine.Platform.Equals(thisTrans.Platform))
                 {
                     thisProdLine.Quantity += thisTrans.Quantity;
                     thisProdLine.EarliestShipDate = 
                         (new DateTime[] { thisProdLine.EarliestShipDate, thisTrans.ExpectedShipDateTime }).Max();
 
+                    if (thisProdLine.Variations.ContainsKey(thisTrans.Variation))
+                    {
+                        thisProdLine.Variations[thisTrans.Variation] += thisTrans.Quantity;
+                    }
+                    else
+                    {
+                        thisProdLine.Variations[thisTrans.Variation] = thisTrans.Quantity;
+                    }
+                    
                     if (!thisProdLine.RelatedMarketListings.Contains(thisTrans.PlatformListing))
                     {
                         thisProdLine.RelatedMarketListings.Add(thisTrans.PlatformListing);
@@ -83,7 +91,7 @@ public class ProductionSummary
                 EarliestShipDate = thisTrans.ExpectedShipDateTime,
                 Sku = thisTrans.Sku,
                 Quantity = thisTrans.Quantity,
-                Variation = thisTrans.Variation,
+                Variations = new Dictionary<string, double>() { { thisTrans.Variation, thisTrans.Quantity } }, 
                 ImageThumbCachePath = thisTrans.ImageThumbCachePath,
                 RelatedMarketListings = new List<IMarketListing>() { thisTrans.PlatformListing }
             });

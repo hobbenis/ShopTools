@@ -78,23 +78,40 @@
                         <Separator></Separator>
                         <Button Click="RefreshOrders">Get</Button>
                     </ToolBar>
-                    <ListView Name="lvOrders" Grid.Row="1" ItemsSource="{Binding ElementName=myProductionSummary, Path=OrderLines}">
+                    <ListView Grid.Row="1" Name="lvOrders" ItemsSource="{Binding ElementName=myEtsyConn, Path=Orders}">
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <StackPanel>
-                                        <Button Click="btnTransactionItem_OnClick">
-                                            <Image Source="{Binding Path=ImageThumbCachePath}"></Image>    
-                                        </Button>
-                                    </StackPanel>
-                                    <StackPanel Orientation="Vertical" Height="96">
-                                        <TextBlock Text="{Binding Path=ExpectedShipDateTime, StringFormat={}Ship By: {0}}"></TextBlock>
-                                        <TextBlock Text="{Binding Path=Sku, StringFormat={}Sku: {0}}"></TextBlock>
-                                        <TextBlock Text="{Binding Quantity, StringFormat={}Quantity: {0}}"></TextBlock>
-                                        <TextBlock Text="{Binding Path=DescriptionFirstLine, StringFormat={}Description: {0}}"></TextBlock>
-                                        <TextBlock Text="{Binding Path=Variation, StringFormat={}Variation: {0}}"></TextBlock>
-                                        <TextBlock Text="{Binding Path=BuyerMessage, StringFormat={}Buyer Message: {0}}"></TextBlock>
-                                    </StackPanel>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Path=CustomerName}"></TextBlock>
+                                    <TextBlock>
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{}{0}, {1}">
+                                                <Binding Path="City"/>
+                                                <Binding Path="State"/>
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                    <ListView ItemsSource="{Binding Path=OrderLines}">
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <StackPanel>
+                                                        <Button Click="btnTransactionItem_OnClick">
+                                                            <Image Source="{Binding Path=ImageThumbCachePath}"></Image>    
+                                                        </Button>
+                                                    </StackPanel>
+                                                    <StackPanel Orientation="Vertical" Height="96">
+                                                        <TextBlock Text="{Binding Path=ExpectedShipDateTime, StringFormat={}Ship By: {0}}"></TextBlock>
+                                                        <TextBlock Text="{Binding Path=Sku, StringFormat={}Sku: {0}}"></TextBlock>
+                                                        <TextBlock Text="{Binding Quantity, StringFormat={}Quantity: {0}}"></TextBlock>
+                                                        <TextBlock Text="{Binding Path=DescriptionFirstLine, StringFormat={}Description: {0}}"></TextBlock>
+                                                        <TextBlock Text="{Binding Path=Variation, StringFormat={}Variation: {0}}"></TextBlock>
+                                                        <TextBlock Text="{Binding Path=BuyerMessage, StringFormat={}Buyer Message: {0}}"></TextBlock>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
+                                    </ListView>
                                 </StackPanel>
                             </DataTemplate>
                         </ListView.ItemTemplate>
@@ -119,19 +136,34 @@
                     <ListView Name="lvProduction" ItemsSource="{Binding ElementName=myProductionSummary, Path=ProductionSummaryLines}" Grid.Row="1">
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <StackPanel>
-                                        <Button Click="btnProductionItem_OnClick">
-                                            <Image Source="{Binding ImageThumbCachePath}"/>
-                                        </Button>
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <StackPanel>
+                                            <Button Click="btnProductionItem_OnClick">
+                                                <Image Source="{Binding ImageThumbCachePath}"/>
+                                            </Button>
+                                        </StackPanel>
+                                        <StackPanel Height="96">
+                                            <TextBlock Text="{Binding EarliestShipDate, StringFormat={}Due By: {0}}"></TextBlock>
+                                            <TextBlock Text="{Binding Sku, StringFormat={}Sku: {0}}"></TextBlock>
+                                            <TextBlock Text="{Binding Quantity, StringFormat={}Quantity: {0}}"></TextBlock>
+                                            <TextBlock Text="{Binding DescriptionFirstLine, StringFormat={}Description: {0}}"></TextBlock>
+                                        </StackPanel>
                                     </StackPanel>
-                                    <StackPanel Height="96">
-                                        <TextBlock Text="{Binding EarliestShipDate, StringFormat={}Due By: {0}}"></TextBlock>
-                                        <TextBlock Text="{Binding Sku, StringFormat={}Sku: {0}}"></TextBlock>
-                                        <TextBlock Text="{Binding Quantity, StringFormat={}Quantity: {0}}"></TextBlock>
-                                        <TextBlock Text="{Binding DescriptionFirstLine, StringFormat={}Description: {0}}"></TextBlock>
-                                        <TextBlock Text="{Binding Variation, StringFormat={}Variation: {0}}"></TextBlock>
-                                    </StackPanel>
+                                    <ListView ItemsSource="{Binding Variations}">
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock>
+                                                    <TextBlock.Text>
+                                                        <MultiBinding StringFormat="{}{0} pcs of {1}">
+                                                            <Binding Path="Value"/>
+                                                            <Binding Path="Key"/>
+                                                        </MultiBinding>
+                                                    </TextBlock.Text>
+                                                </TextBlock>
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
+                                    </ListView>
                                 </StackPanel>
                             </DataTemplate>
                         </ListView.ItemTemplate>

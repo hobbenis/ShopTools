@@ -7,12 +7,17 @@ namespace ShopTools.Data.Market;
 
 public interface IMarketOrder
 {
+    public string WebUrl { get; }
+    public string Platform { get; }
+
+    public string OrderId { get; }
+    public string CustomerName { get; }
+    public string City { get; }
+    public string State { get; }
+    
     public IEnumerable<IMarketOrderLine> OrderLines { get; }
     public IEnumerable<IMarketOrderShipment> OrderShipments { get; }
     public DateTime EarliestExpectedShipDate { get; }
-    
-    public string WebUrl { get; }
-    public string Platform { get; }
 }
 
 public interface IMarketOrderLine
