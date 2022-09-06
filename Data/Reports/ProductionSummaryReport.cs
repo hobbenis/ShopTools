@@ -1,9 +1,8 @@
-using ShopTools.Data.Etsy;
-using ShopTools.Data.Market;
+using ShopTools.Interfaces;
 
-namespace ShopTools.Production;
+namespace ShopTools.Reports;
 
-public class ProductionSummaryLine
+public class ProductionSummaryReportLine
 {
     public string Sku { get; set; }
     public double Quantity { get; set; }
@@ -21,12 +20,12 @@ public class ProductionSummaryLine
     public string ImageThumbCachePath { get; set; }
 }
     
-public class ProductionSummary
+public class ProductionSummaryReport
 {
     private List<IMarketOrder> myOrders;
     private DateTime myCutoffDate;
         
-    public ProductionSummary(IEnumerable<IMarketOrder> theseOrders, DateTime thisCutOffDate)
+    public ProductionSummaryReport(IEnumerable<IMarketOrder> theseOrders, DateTime thisCutOffDate)
     {
         myCutoffDate = thisCutOffDate;
         myOrders = new List<IMarketOrder>();
@@ -48,15 +47,15 @@ public class ProductionSummary
         SummarizeProduction();
     }
 
-    private List<ProductionSummaryLine> mySummaryLines;
+    private List<ProductionSummaryReportLine> mySummaryLines;
     
     private void SummarizeProduction()
     {
-        mySummaryLines = new List<ProductionSummaryLine>();
+        mySummaryLines = new List<ProductionSummaryReportLine>();
         
         foreach (IMarketOrderLine thisTrans in OrderLines)
         {
-            foreach (ProductionSummaryLine thisProdLine in mySummaryLines)
+            foreach (ProductionSummaryReportLine thisProdLine in mySummaryLines)
             {
                 if (thisProdLine.PlatformListingId.Equals(thisTrans.PlatformListingId)
                      && thisProdLine.Platform.Equals(thisTrans.Platform))
@@ -83,7 +82,7 @@ public class ProductionSummary
                 }
             }
                 
-            mySummaryLines.Add(new ProductionSummaryLine()
+            mySummaryLines.Add(new ProductionSummaryReportLine()
             {
                 PlatformListingId = thisTrans.PlatformListingId,
                 Platform = thisTrans.Platform,
@@ -123,11 +122,11 @@ public class ProductionSummary
         }
     }
     
-    public IEnumerable<ProductionSummaryLine> ProductionSummaryLines
+    public IEnumerable<ProductionSummaryReportLine> ProductionSummaryLines
     {
         get
         {
-            foreach (ProductionSummaryLine thisLine in mySummaryLines)
+            foreach (ProductionSummaryReportLine thisLine in mySummaryLines)
             {
                 yield return thisLine;
             }

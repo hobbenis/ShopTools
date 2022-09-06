@@ -1,13 +1,11 @@
 ﻿//I am not a cryptographer. This was thrown together to provide some basic assurance
 //on api keys stored on an otherwise trustworthy machine. You need to review this yourself.
 
-using System;
-using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using Newtonsoft.Json;
 
-namespace ShopTools.Data.Common;
+namespace ShopTools.Common;
 
 public class LockedString
 {

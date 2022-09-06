@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace ShopTools.Data.Etsy;
+namespace ShopTools.Etsy;
 
 public class EtsyShippingProfile : EtsyObject
 {

@@ -1,9 +1,8 @@
 //put interfaces and the classes that handle them here
 
-using System.Collections;
-using ShopTools.Data.Common;
+using ShopTools.Common;
 
-namespace ShopTools.Data.Market;
+namespace ShopTools.Interfaces;
 
 public interface IMarketOrder
 {

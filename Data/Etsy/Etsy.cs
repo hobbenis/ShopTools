@@ -5,18 +5,14 @@
 
 //this file is to contain classes, etc that are specific to etsy's api
 
-using System;
-using System.Collections;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Net;
-using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using RestSharp;
-using ShopTools.Data.Market;
-using ShopTools.Data.Common;
+using ShopTools.Common;
+using ShopTools.Interfaces;
 
-namespace ShopTools.Data.Etsy;
+namespace ShopTools.Etsy;
 
 public enum EtsyScopes
 {

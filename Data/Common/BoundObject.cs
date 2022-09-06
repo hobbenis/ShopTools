@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace ShopTools.Data.Common;
+namespace ShopTools.Common;
 
 public class BoundObject : INotifyPropertyChanged
 {

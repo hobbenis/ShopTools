@@ -5,7 +5,7 @@
 
 //this file is to contain classes, etc specific to shopify's api
 
-namespace ShopTools.Data.Shopify;
+namespace ShopTools.Shopify;
 
 public class Product
 {

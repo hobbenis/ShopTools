@@ -3,11 +3,10 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using ShopTools.Data.Etsy;
 using Microsoft.VisualBasic;
 using System.IO;
-using ShopTools.Data.Market;
-using ShopTools.Production;
+using ShopTools.Etsy;
+using ShopTools.Interfaces;
 
 namespace ShopTools.Reports
 {
@@ -21,7 +20,7 @@ namespace ShopTools.Reports
         
         private IMarketConnection myEtsyConn;
         
-        private ProductionSummary myProductionSummary;
+        private ProductionSummaryReport myProductionSummary;
 
         private int daysAhead = 7;
         
@@ -129,7 +128,7 @@ namespace ShopTools.Reports
         private void RefreshProductionSummary(object sender, RoutedEventArgs e)
         {
             myEtsyConn.RefreshOrderCache();
-            myProductionSummary = new ProductionSummary(myEtsyConn.Orders, dpProdCutoff.SelectedDate.Value);
+            myProductionSummary = new ProductionSummaryReport(myEtsyConn.Orders, dpProdCutoff.SelectedDate.Value);
             
             lvProduction.ItemsSource = 
                 myProductionSummary.ProductionSummaryLines.OrderBy(x => x.EarliestShipDate).ToList();
@@ -153,7 +152,7 @@ namespace ShopTools.Reports
         
         private void btnProductionItem_OnClick(object sender, RoutedEventArgs e)
         {
-            ProductionSummaryLine thisProdLine = (sender as Button).DataContext as ProductionSummaryLine;
+            ProductionSummaryReportLine thisProdLine = (sender as Button).DataContext as ProductionSummaryReportLine;
             
             foreach (IMarketListing thisListing in thisProdLine.RelatedMarketListings)
             {

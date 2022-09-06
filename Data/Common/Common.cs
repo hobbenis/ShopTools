@@ -1,14 +1,11 @@
-﻿using System.ComponentModel;
-using System.Net;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-using ShopTools.Data.Etsy;
 using Newtonsoft.Json;
 using RestSharp;
+using ShopTools.Etsy;
 
-namespace ShopTools.Data.Common;
+namespace ShopTools.Common;
 
 public class OAuthToken
 {

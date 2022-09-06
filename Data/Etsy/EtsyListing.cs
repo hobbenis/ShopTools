@@ -1,8 +1,8 @@
 using System.ComponentModel;
 using Newtonsoft.Json;
-using ShopTools.Data.Market;
+using ShopTools.Interfaces;
 
-namespace ShopTools.Data.Etsy;
+namespace ShopTools.Etsy;
 
 public class EtsyListing : EtsyObject, IMarketListing
 {

@@ -9,8 +9,8 @@ using System.Net;
 using System.Web;
 using System.Windows;
 using System.Windows.Media;
-using ShopTools.Data.Etsy;
-using ShopTools.Data.Market;
+using ShopTools.Etsy;
+using ShopTools.Interfaces;
 
 namespace ShopTools.Reports;
 

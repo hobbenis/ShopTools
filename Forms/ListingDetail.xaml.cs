@@ -4,8 +4,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Drawing;
 using System.Net.Mime;
-using ShopTools.Data.Etsy;
-using ShopTools.Data.Market;
+using ShopTools.Interfaces;
 
 namespace ShopTools.Reports;
 

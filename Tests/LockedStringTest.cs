@@ -1,6 +1,6 @@
 using System;
 using NUnit.Framework;
-using ShopTools.Data.Common;
+using ShopTools.Common;
 
 namespace DataTests;
 
