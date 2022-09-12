@@ -73,9 +73,6 @@
                         <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <ToolBar Grid.Row="0">
-                        <Label>Cutoff</Label>
-                        <DatePicker Name="dpOrdCutoff"></DatePicker>
-                        <Separator></Separator>
                         <Button Click="RefreshOrders">Get</Button>
                     </ToolBar>
                     <ListView Grid.Row="1" Name="lvOrders" ItemsSource="{Binding ElementName=myEtsyConn, Path=Orders}">
@@ -118,57 +115,16 @@
                     </ListView>
                 </Grid>
             </TabItem>
-            <TabItem Header="Production">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"></RowDefinition>
-                        <RowDefinition></RowDefinition>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <ToolBar Grid.Row="0">
-                        <Label>Cutoff</Label>
-                        <DatePicker Name="dpProdCutoff"> </DatePicker>
-                        <Separator></Separator>
-                        <Button Click="RefreshProductionSummary">Get</Button>
-                    </ToolBar>
-                    <ListView Name="lvProduction" ItemsSource="{Binding ElementName=myProductionSummary, Path=ProductionSummaryLines}" Grid.Row="1">
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel>
-                                    <StackPanel Orientation="Horizontal">
-                                        <StackPanel>
-                                            <Button Click="btnProductionItem_OnClick">
-                                                <Image Source="{Binding ImageThumbCachePath}"/>
-                                            </Button>
-                                        </StackPanel>
-                                        <StackPanel Height="96">
-                                            <TextBlock Text="{Binding EarliestShipDate, StringFormat={}Due By: {0}}"></TextBlock>
-                                            <TextBlock Text="{Binding Sku, StringFormat={}Sku: {0}}"></TextBlock>
-                                            <TextBlock Text="{Binding Quantity, StringFormat={}Quantity: {0}}"></TextBlock>
-                                            <TextBlock Text="{Binding DescriptionFirstLine, StringFormat={}Description: {0}}"></TextBlock>
-                                        </StackPanel>
-                                    </StackPanel>
-                                    <ListView ItemsSource="{Binding Variations}">
-                                        <ListView.ItemTemplate>
-                                            <DataTemplate>
-                                                <TextBlock>
-                                                    <TextBlock.Text>
-                                                        <MultiBinding StringFormat="{}{0} pcs of {1}">
-                                                            <Binding Path="Value"/>
-                                                            <Binding Path="Key"/>
-                                                        </MultiBinding>
-                                                    </TextBlock.Text>
-                                                </TextBlock>
-                                            </DataTemplate>
-                                        </ListView.ItemTemplate>
-                                    </ListView>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-                </Grid>
+            <TabItem Header="Reports">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <DatePicker Name="dpProdSummary"></DatePicker>
+                        <Button Click="GenerateProductionSummary">Generate Production Summary</Button>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Click="StalledShippingSummary">Generate Stalled Shipping Report</Button>
+                    </StackPanel>
+                </StackPanel>
             </TabItem>
         </TabControl>
         

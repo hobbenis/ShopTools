@@ -5,70 +5,9 @@
 
 //this file is to contain classes, etc specific to shopify's api
 
+using ShopTools.Interfaces;
+
 namespace ShopTools.Shopify;
-
-public class Product
-{
-    public string body_html;
-    public DateTime created_at;
-    public string handle;
-    public long id;
-    public List<ProductImage> images;
-    public Dictionary<string, object> options;
-    public string product_type;
-    public DateTime published_at;
-    public string published_scope;
-    public string status;
-    public string tags;
-    public string template_suffix;
-    public string title;
-    public DateTime updated_at;
-    public List<ProductVariant> variants;
-    public string vendor;
-}
-
-public class ProductImage
-{
-    public DateTime created_at;
-    public long id;
-    public int position;
-    public long product_id;
-    public List<long> variant_ids;
-    public string src;
-    public int width;
-    public int height;
-    public DateTime updated_at;
-}
-
-public class ProductVariant
-{
-    public string barcode;
-    public string compare_at_price;
-    public DateTime created_at;
-    public string fulfillment_service;
-    public double grams;
-    public long id;
-    public long image_id;
-    public long inventory_item_id;
-    public string inventory_management;
-    public string inventory_policy;
-    public int inventory_quantity;
-    public int old_inventory_quantity;
-    public int inventory_quantity_adjustment;
-    public Dictionary<string, string> option;
-    public Dictionary<string, Price> presentment_prices;
-    public int position;
-    public string price;
-    public long product_id;
-    public bool requires_shipping;
-    public string sku;
-    public bool taxable;
-    public string tax_code;
-    public string title;
-    public DateTime updated_at;
-    public double weight;
-    public string weight_unit;
-}
 
 public class Price
 {
@@ -84,62 +23,6 @@ public class ClientDetails
   public int browser_width;
   public string session_hash;
   public string user_agent;
-}
-
-public class Customer
-{
-  public bool accepts_marketing;
-  public DateTime accepts_marketing_updated_at;
-  public List<CustomerAddress> addresses;
-  public string currency;
-  public DateTime created_at;
-  public CustomerAddress default_address;
-  public string email;
-  
-  /*{
-  "email_marketing_consent": {
-    "state": "subscribed",
-    "opt_in_level": "confirmed_opt_in",
-    "consent_updated_at": "2022-04-01T11:22:06-04:00"
-  },*/
-
-  public string first_name;
-  public long id;
-  public string last_name;
-  public long last_order_id;
-  
-  /*
-  "last_order_name": "#1169",
-  "metafield": {
-    "key": "new",
-    "namespace": "global",
-    "value": "newvalue",
-    "type": "string"
-  },
-  "marketing_opt_in_level": "confirmed_opt_in",
-  "multipass_identifier": null,
-  "note": "Placed an order that had a fraud warning",
-  "orders_count": 3,
-  "password": "password",
-  "password_confirmation": "password_confirmation",
-  "phone": "+16135551111",
-  "sms_marketing_consent": {
-    "state": "subscribed",
-    "opt_in_level": "single_opt_in",
-    "consent_updated_at": "2021-08-03T15:31:06-04:00",
-    "consent_collected_from": "OTHER"
-  },
-  "state": "disabled",
-  "tags": "loyal",
-  "tax_exempt": true,
-  "tax_exemptions": [
-    "CA_STATUS_CARD_EXEMPTION",
-    "CA_BC_RESELLER_EXEMPTION"
-  ],
-  "total_spent": "375.30",
-  "updated_at": "2012-08-24T14:01:46-04:00",
-  "verified_email": true
-}*/
 }
 
 public class Order
@@ -558,25 +441,6 @@ public string customer_locale;
 "order_status_url": "https://checkout.shopify.com/112233/checkouts/4207896aad57dfb159/thank_you_token?key=753621327b9e8a64789651bf221dfe35"
 }
 }*/
-}
-
-public class CustomerAddress
-{
-  public string address1;
-  public string address2;
-  public string city;
-  public string? company;
-  public string country;
-  public string first_name;
-  public string last_name;
-  public string phone;
-  public string province;
-  public string zip;
-  public string name;
-  public string province_code;
-  public string country_code;
-  public string latitude;
-  public string longitude;
 }
 
 public class Transaction

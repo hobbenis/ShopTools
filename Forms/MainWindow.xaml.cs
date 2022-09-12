@@ -20,19 +20,16 @@ namespace ShopTools.Reports
         
         private IMarketConnection myEtsyConn;
         
-        private ProductionSummaryReport myProductionSummary;
-
-        private int daysAhead = 7;
-        
         public MainWindow()
         {
             InitializeComponent();
             
             btnAuth.IsEnabled = false;
             Log("Unlock token file to request data.");
+            
+            int daysAhead = 7;
 
-            dpOrdCutoff.SelectedDate = DateTime.Now.AddDays(daysAhead);
-            dpProdCutoff.SelectedDate = DateTime.Now.AddDays(daysAhead);
+            dpProdSummary.SelectedDate = DateTime.Now.AddDays(daysAhead);
         }
 
         private void tsbUnlock_Click(object sender, EventArgs e)
@@ -117,23 +114,26 @@ namespace ShopTools.Reports
         
         private void RefreshOrders(object sender, RoutedEventArgs e)
         {
+            if (myEtsyConn is null) { return; }
+            
             myEtsyConn.RefreshOrderCache();
-            //myProductionSummary = new ProductionSummary(myEtsyConn.Orders, dpOrdCutoff.SelectedDate.Value);
-
+            
             lvOrders.ItemsSource = myEtsyConn.Orders;
             
             Log($"{lvOrders.Items.Count} orders downloaded.");
         }  
         
-        private void RefreshProductionSummary(object sender, RoutedEventArgs e)
+        private void GenerateProductionSummary(object sender, RoutedEventArgs e)
         {
+            if (myEtsyConn is null) { return; }
+            
             myEtsyConn.RefreshOrderCache();
-            myProductionSummary = new ProductionSummaryReport(myEtsyConn.Orders, dpProdCutoff.SelectedDate.Value);
+            ProductionSummaryReport myProductionSummary = 
+                new ProductionSummaryReport(
+                    myEtsyConn.Orders,
+                    dpProdSummary.SelectedDate.Value);
             
-            lvProduction.ItemsSource = 
-                myProductionSummary.ProductionSummaryLines.OrderBy(x => x.EarliestShipDate).ToList();
-            
-            Log($"{lvProduction.Items.Count} different items required for orders before the cutoff date.");
+            new ProductionSummaryView(myProductionSummary).Show();
         }
         
         private void btnListingDetail_OnClick(object sender, RoutedEventArgs e)
@@ -149,15 +149,12 @@ namespace ShopTools.Reports
             
             new OrderDetail(thisTransaction.PlatformOrder).Show();
         }
-        
-        private void btnProductionItem_OnClick(object sender, RoutedEventArgs e)
+
+        private void StalledShippingSummary(object sender, RoutedEventArgs e)
         {
-            ProductionSummaryReportLine thisProdLine = (sender as Button).DataContext as ProductionSummaryReportLine;
+            if (myEtsyConn is null) { return; }
             
-            foreach (IMarketListing thisListing in thisProdLine.RelatedMarketListings)
-            {
-                new ListingDetail(thisListing).Show();
-            }
+            MessageBox.Show("Not implemented yet.");
         }
     }
 }
